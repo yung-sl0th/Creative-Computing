@@ -1,17 +1,13 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: white;
-    color: black;
-    padding: 30px;
-    line-height: 1.6;
-  }
-  
-  h1 {
+    font-family: sans-serif;
+}
+
+.poem {
     text-align: center;
-    color: #b30059;
-  }
-  
-  a {
-    color: #b30059;
+}
+
+.linked-word {
+    color: blue;
     text-decoration: underline;
-  }
+    cursor: pointer;
+}
