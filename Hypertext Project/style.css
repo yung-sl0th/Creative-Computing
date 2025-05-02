@@ -1,13 +1,40 @@
+/* This is where we style the *entire* page.
+    Think of it as the "makeup" for our HTML "skeleton."
+*/
+
 body {
-    font-family: sans-serif;
+    font-family: monospace; /* Monospace font (like code) */
+    display: flex;             /* Flexbox for layout (centering) */
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    min-height: 100vh;        /* Full viewport height */
+    margin: 0;               /* No default margins */
+    background-color: #f8f8f8; /* Light gray background */
 }
 
-.poem {
-    text-align: center;
+div {
+    max-width: 80%;           /* Limit content width */
+    padding: 20px;           /* Spacing inside the div */
+    background-color: #fff;   /* White background */
+    border: 1px solid #eee;   /* Light border */
+    box-shadow: 2px 2px 5px #ddd; /* Subtle shadow */
 }
 
-.linked-word {
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
+h1, h2 {
+    color: #222;             /* Dark gray color */
+    text-align: center;      /* Center headings */
+}
+
+p {
+    color: #333;             /* Darker gray for paragraphs */
+    line-height: 1.5;        /* Spacing between lines */
+    text-align: center;      /* Center paragraphs */
+}
+
+button {
+    padding: 8px 15px;       /* Spacing inside the button */
+    background-color: #eee;   /* Light gray */
+    border: 1px solid #ccc;   /* Gray border */
+    cursor: pointer;         /* Pointer cursor on hover */
+    font-family: monospace; /* Monospace font */
 }
