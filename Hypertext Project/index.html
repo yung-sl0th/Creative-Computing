@@ -17,18 +17,23 @@
             cursor: pointer;
         }
 
-        .title {
+        .top-title {
             font-size: 2em; /* Make the title larger */
-            text-align: center; /* Center the title */
-            margin-bottom: 40px; /* Add more space between the title and the poem */
+            text-align: center; /* Center the title horizontally */
+            position: fixed; /* Stick it to the top */
+            top: 20px; /* Position from the top (adjust as needed) */
+            left: 0;
+            width: 100%; /* Make it span the entire width */
+            z-index: 10; /* Ensure it's above other content if needed */
         }
 
         .poem {
-            font-family: monospace; /* A common cursive font - you can change this */
+            font-family: 'Segoe Script', cursive; /* A common cursive font - you can change this */
             font-style: italic; /* Add slight italics for emphasis */
             text-align: center; /* Center the poem */
             line-height: 1.6; /* Improve readability */
-            margin-bottom: 60px; /* Add significant space between the poem and audio */
+            margin-top: 100px; /* Add space to push the poem down below the title */
+            margin-bottom: 80px; /* Add significant space between the poem and audio */
         }
 
         .audio-container {
@@ -43,7 +48,7 @@
 
 <body>
 
-    <div class="title">
+    <div class="top-title">
         Spanglish Sin Bumbo
     </div>
 
