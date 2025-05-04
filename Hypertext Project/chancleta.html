@@ -1,19 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Nuyorican Journey</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chancletas</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <h1>Nuyorican Journey</h1>
+    <div style="text-align: center;">
+        <h2>Chancletas</h2>
 
-  <p>
-    En mi <a href="palabra1.html">corazón</a>, Brooklyn canta<br>
-    con un son de <a href="palabra2.html">coquí</a> y trenes<br>
-    donde Spanglish no es error,<br>
-    es <a href="palabra3.html">resistencia</a>.
-  </p>
+        <p>
+            Short prose of what chancletas mean to a Nuyorican in Brooklyn...
+        </p>
+
+        <button onclick="goBack()">Volver</button>
+        <p style="font-size: 0.8em;">(click "Volver" to go back)</p>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 
 </body>
+
 </html>
