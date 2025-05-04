@@ -17,22 +17,26 @@
             cursor: pointer;
         }
 
-        .poem {
-            font-family: 'Segoe Script', cursive; /* A common cursive font - you can change this */
-            font-style: italic; /* Add slight italics for emphasis */
-            text-align: center; /* Center the poem */
-            line-height: 1.6; /* Improve readability */
-        }
-
         .title {
             font-size: 2em; /* Make the title larger */
             text-align: center; /* Center the title */
-            margin-bottom: 20px; /* Add some space between the title and the poem */
+            margin-bottom: 40px; /* Add more space between the title and the poem */
+        }
+
+        .poem {
+            font-family: monospace; /* A common cursive font - you can change this */
+            font-style: italic; /* Add slight italics for emphasis */
+            text-align: center; /* Center the poem */
+            line-height: 1.6; /* Improve readability */
+            margin-bottom: 60px; /* Add significant space between the poem and audio */
         }
 
         .audio-container {
             text-align: center; /* Center the audio controls */
-            margin-top: 20px; /* Add space above the audio controls */
+            position: fixed; /* Stick to the bottom */
+            bottom: 20px; /* Position from the bottom */
+            left: 0;
+            width: 100%; /* Make it span the entire width */
         }
     </style>
 </head>
@@ -49,7 +53,7 @@
         and the summer smells like <a href="azucar.html">azúcar</a><br>
         melting on piragua ice.<br>
         Mami calls me pa’ dentro—<br>
-        “Ponte las <a href="chancleta.html">chancletas</a>, nene!”<br>
+        “Ponte las <a href="chancletas.html">chancletas</a>, nene!”<br>
         but I’m out watching<br>
         los viejitos play <a href="dominos.html">domino</a><br>
         on fold-out tables by the curb,<br>
@@ -64,6 +68,7 @@
     <div class="audio-container">
         <audio controls>
             <source src="bomba_plena.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
         </audio>
         <p style="font-size: 0.8em; font-style: italic;">(Bomba/Plena instrumental)</p>
     </div>
