@@ -16,39 +16,56 @@
         a:hover {
             cursor: pointer;
         }
+
+        .poem {
+            font-family: 'Segoe Script', cursive; /* A common cursive font - you can change this */
+            font-style: italic; /* Add slight italics for emphasis */
+            text-align: center; /* Center the poem */
+            line-height: 1.6; /* Improve readability */
+        }
+
+        .title {
+            font-size: 2em; /* Make the title larger */
+            text-align: center; /* Center the title */
+            margin-bottom: 20px; /* Add some space between the title and the poem */
+        }
+
+        .audio-container {
+            text-align: center; /* Center the audio controls */
+            margin-top: 20px; /* Add space above the audio controls */
+        }
     </style>
 </head>
 
 <body>
 
-    <div style="text-align: center;">
-        <h1>Spanglish Sin Bumbo</h1>
+    <div class="title">
+        Spanglish Sin Bumbo
     </div>
 
-    <div style="text-align: center;">
-        <p>
-            I’m from Brooklyn,<br>
-            where the streets hum salsa<br>
-            and the summer smells like <a href="azucar.html">azúcar</a><br>
-            melting on piragua ice.<br>
-            Mami calls me pa’ dentro—<br>
-            “Ponte las <a href="chancleta.html">chancletas</a>!”<br>
-            but I’m out watching<br>
-            los viejitos play <a href="domino.html">domino</a><br>
-            on fold-out tables by the curb,<br>
-            tiles clicking like heartbeat drums<br>
-            under stoop-light sunsets.<br>
-            My voice?<br>
-            It dances Spanglish,<br>
-            soft like coquito,<br>
-            strong like abuelita’s regaño.
-        </p>
-        <div>
-            <audio controls>
-                <source src="ambient-sound.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
+    <div class="poem">
+        I’m from Brooklyn,<br>
+        where the streets hum salsa<br>
+        and the summer smells like <a href="azucar.html">azúcar</a><br>
+        melting on piragua ice.<br>
+        Mami calls me pa’ dentro—<br>
+        “Ponte las <a href="chancleta.html">chancletas</a>, nene!”<br>
+        but I’m out watching<br>
+        los viejitos play <a href="dominos.html">domino</a><br>
+        on fold-out tables by the curb,<br>
+        tiles clicking like heartbeat drums<br>
+        under stoop-light sunsets.<br>
+        My voice?<br>
+        It dances Spanglish,<br>
+        soft like coquito,<br>
+        strong like abuelita’s regaño.
+    </div>
+
+    <div class="audio-container">
+        <audio controls>
+            <source src="bomba_plena.mp3" type="audio/mpeg">
+        </audio>
+        <p style="font-size: 0.8em; font-style: italic;">(Bomba/Plena instrumental)</p>
     </div>
 
 </body>
