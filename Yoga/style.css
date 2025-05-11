@@ -4,12 +4,23 @@ body {
     display: flex;
     justify-content: center;
     padding: 2rem;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
   }
   
   #app {
     max-width: 800px;
     width: 100%;
-    background: white;
+    background: rgba(255, 255, 255, 0.85); /* slight transparency */
+    backdrop-filter: blur(4px); /* glossy effect */
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
