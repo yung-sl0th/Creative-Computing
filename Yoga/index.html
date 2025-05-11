@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yoga Routine Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="customization-screen">
+      <h2>What body part feels tight?</h2>
+      <div class="choices" id="body-part">
+        <button data-value="shoulders">Shoulders</button>
+        <button data-value="hips">Hips</button>
+        <button data-value="lower-back">Lower Back</button>
+      </div>
+
+      <h2>How long do you want to move?</h2>
+      <div class="choices" id="duration">
+        <button data-value="short">10–20 min</button>
+        <button data-value="long">30–40 min</button>
+      </div>
+
+      <h2>Choose your pace</h2>
+      <div class="choices" id="pace">
+        <button data-value="slow">Slow & Recovery</button>
+        <button data-value="fast">Energizing</button>
+      </div>
+
+      <button id="generate-routine">Generate My Flow</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <div id="avatar-room"></div>
+      <div id="routine-text"></div>
+      <button id="start-over">Start Over</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
