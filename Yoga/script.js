@@ -4,6 +4,27 @@ const state = {
     pace: null
   };
   
+  document.querySelectorAll("#body-part button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.bodyPart = btn.dataset.value;
+      highlightSelected(btn, "#body-part");
+    });
+  });
+  
+  document.querySelectorAll("#duration button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.duration = btn.dataset.value;
+      highlightSelected(btn, "#duration");
+    });
+  });
+  
+  document.querySelectorAll("#pace button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.pace = btn.dataset.value;
+      highlightSelected(btn, "#pace");
+    });
+  });
+
   const yogaFlows = {
     shoulders: {
       short: {
@@ -12,7 +33,6 @@ const state = {
           "Shoulder Rolls – 1 min",
           "Thread the Needle – 2 min each side",
           "Puppy Pose – 2 min",
-          "Eagle Arms – 1 min",
           "Savasana – 2 min"
         ],
         fast: [
@@ -20,7 +40,7 @@ const state = {
           "Chaturanga to Upward Dog – 3x",
           "Dolphin Pose – 1 min",
           "Plank to Down Dog – 5 reps",
-          "Reverse Tabletop – 1 min"
+          "Child’s Pose – 1 min"
         ]
       },
       long: {
@@ -49,7 +69,6 @@ const state = {
           "Seated Forward Fold – 2 min",
           "Low Lunge – 2 min each side",
           "Pigeon Pose – 2 min each side",
-          "Bridge Pose – 2 min",
           "Savasana – 2 min"
         ],
         fast: [
@@ -116,33 +135,7 @@ const state = {
       }
     }
   };
-  
-  function getRandomSubset(arr, n) {
-    const shuffled = [...arr].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n);
-  }
-  
-  document.querySelectorAll("#body-part button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.bodyPart = btn.dataset.value;
-      highlightSelected(btn, "#body-part");
-    });
-  });
-  
-  document.querySelectorAll("#duration button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.duration = btn.dataset.value;
-      highlightSelected(btn, "#duration");
-    });
-  });
-  
-  document.querySelectorAll("#pace button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.pace = btn.dataset.value;
-      highlightSelected(btn, "#pace");
-    });
-  });
-  
+
   document.getElementById("generate-routine").addEventListener("click", () => {
     if (Object.values(state).includes(null)) {
       alert("Please make all selections!");
@@ -161,18 +154,18 @@ const state = {
   
     room.style.background = bg;
   
-    const allPoses = yogaFlows[state.bodyPart][state.duration][state.pace];
-    const poses = getRandomSubset(allPoses, state.duration === "long" ? 6 : 4);
-  
-    const routine = document.getElementById("routine-text");
+    const routine = document.getElementById("routine-text");  
+    const poses = yogaFlows[state.bodyPart][state.duration][state.pace];
+
     routine.innerHTML = `
-      <h3>Your Personalized Flow</h3>
-      <p><strong>Focus:</strong> ${state.bodyPart.replace('-', ' ')}</p>
-      <p><strong>Length:</strong> ${state.duration === "long" ? "30–40 minutes" : "10–20 minutes"}</p>
-      <p><strong>Pace:</strong> ${state.pace === "fast" ? "Fast & Energizing" : "Slow & Recovery-Focused"}</p>
-      <h4>Suggested Routine:</h4>
-      <ol>${poses.map(pose => `<li>${pose}</li>`).join('')}</ol>
-    `;
+    <h3>Your Personalized Flow</h3>
+    <p><strong>Focus:</strong> ${state.bodyPart.replace('-', ' ')}</p>
+    <p><strong>Length:</strong> ${state.duration === "long" ? "30–40 minutes" : "10–20 minutes"}</p>
+    <p><strong>Pace:</strong> ${state.pace === "fast" ? "Fast & Energizing" : "Slow & Recovery-Focused"}</p>
+    <h4>Suggested Routine:</h4>
+    <ol>${poses.map(pose => `<li>${pose}</li>`).join('')}</ol>
+`;
+
   });
   
   document.getElementById("start-over").addEventListener("click", () => {
@@ -180,5 +173,9 @@ const state = {
   });
   
   function highlightSelected(button, groupSelector) {
-    document.querySelectorAll(`${groupSelector} button
+    document.querySelectorAll(`${groupSelector} button`).forEach(btn => {
+      btn.style.backgroundColor = '#e0e0e0';
+    });
+    button.style.backgroundColor = '#9fa8da';
+  }
   
