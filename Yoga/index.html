@@ -10,32 +10,34 @@
   <div id="app">
     <h1>Create Your <br><span>Yoga Flow</span></h1>
 
-    <div class="section">
+    <div class="section" id="customization-screen">
       <p>What body part feels tight?</p>
       <div class="choices" id="body-part">
         <button data-value="shoulders">Shoulders</button>
         <button data-value="hips">Hips</button>
         <button data-value="lower-back">Lower Back</button>
       </div>
-    </div>
 
-    <div class="section">
       <p>How long do you want to move?</p>
       <div class="choices" id="duration">
         <button data-value="short">10–20 min</button>
         <button data-value="long">30–40 min</button>
       </div>
-    </div>
 
-    <div class="section">
       <p>Choose your pace</p>
       <div class="choices" id="pace">
         <button data-value="slow">Slow & Recovery</button>
         <button data-value="fast">Energizing</button>
       </div>
+
+      <button id="generate-routine">Generate My Flow</button>
     </div>
 
-    <button id="generate-routine">Generate My Flow</button>
+    <div id="result-screen" class="hidden">
+      <div id="avatar-room"></div>
+      <div id="routine-text"></div>
+      <button id="start-over">Start Over</button>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>

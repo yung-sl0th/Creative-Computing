@@ -34,10 +34,6 @@ h1 {
   line-height: 1.2;
 }
 
-.section {
-  margin-bottom: 2rem;
-}
-
 .section p {
   font-size: 1.1rem;
   margin-bottom: 1rem;
@@ -49,6 +45,7 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .choices button {
@@ -67,10 +64,15 @@ h1 {
   background: #e6e0f4;
 }
 
-#generate-routine {
-  margin-top: 2rem;
-  width: 100%;
+.selected {
+  background-color: #dcd0ff !important;
+  font-weight: bold;
+}
+
+#generate-routine, #start-over {
+  margin-top: 1rem;
   padding: 1rem;
+  width: 100%;
   background-color: #2d1b3a;
   color: white;
   font-size: 1.1rem;
@@ -81,6 +83,38 @@ h1 {
   transition: background-color 0.3s;
 }
 
-#generate-routine:hover {
+#generate-routine:hover, #start-over:hover {
   background-color: #3c2951;
+}
+
+#result-screen {
+  text-align: left;
+  margin-top: 2rem;
+}
+
+#avatar-room {
+  height: 180px;
+  border-radius: 1rem;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 1.5rem;
+}
+
+#routine-text {
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#routine-text h3 {
+  margin-top: 0;
+}
+
+#routine-text ol {
+  padding-left: 1.5rem;
+}
+
+.hidden {
+  display: none;
 }
