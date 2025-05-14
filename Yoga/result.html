@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Yoga Flow</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #c2a0fb, #a0d2fb);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      width: 100%;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    p {
+      margin: 5px 0;
+      font-size: 18px;
+    }
+
+    .pose-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .pose-card {
+      width: 180px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .pose-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+  background-color: #fff;
+}
+
+
+    .pose-card.last img {
+      object-fit: contain;
+    }
+
+    .pose-card-title {
+      font-weight: bold;
+      padding: 8px 10px 0;
+      font-size: 16px;
+    }
+
+    .pose-card-subtitle {
+      font-style: italic;
+      color: #666;
+      padding-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 20px;
+      background-color: #6c63ff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background-color: #594bdb;
+    }
+
+    a {
+      color: #6c63ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Your Personalized Flow</h2>
+    <p><strong>Focus:</strong> <span id="focus"></span></p>
+    <p><strong>Duration:</strong> <span id="duration"></span></p>
+    <p><strong>Pace:</strong> <span id="pace"></span></p>
+
+    <h3 style="margin-top: 30px;">Suggested Routine</h3>
+    <div class="pose-cards" id="pose-cards"></div>
+
+    <a class="back-btn" href="generator.html">← Back to Sequence Builder</a>
+  </div>
+
+  <script>
+    const stateRaw = localStorage.getItem("yogaState");
+    const posesRaw = localStorage.getItem("yogaPoses");
+
+    if (!stateRaw || !posesRaw) {
+      document.querySelector(".container").innerHTML = `
+        <h2>Oops! Something went wrong.</h2>
+        <p>It looks like your session expired or you visited this page directly.</p>
+        <a href="generator.html">Go back to create your sequence</a>
+      `;
+      throw new Error("Missing yogaState or yogaPoses in localStorage");
+    }
+
+    const state = JSON.parse(stateRaw);
+    const poses = JSON.parse(posesRaw);
+
+    document.getElementById("focus").textContent = state.bodyPart.replace("-", " ");
+    const durationLabel = state.duration === "long" ? "30–40 min" : "10–20 min";
+    document.getElementById("duration").textContent = durationLabel;
+    document.getElementById("pace").textContent = state.pace === "fast" ? "Energizing" : "Slow & Recovery-Focused";
+
+    const [minTotal, maxTotal] = durationLabel.split("–").map(s => parseInt(s));
+    const perPoseMin = Math.floor(minTotal / poses.length);
+    const perPoseMax = Math.ceil(maxTotal / poses.length);
+    const timeRange = `${perPoseMin}–${perPoseMax} min`;
+
+    const poseCardsContainer = document.getElementById("pose-cards");
+    poses.forEach((pose, index) => {
+      const [poseNameRaw] = pose.split("–");
+      const poseName = poseNameRaw.trim();
+
+      const imagePath = `poses/${poseName}.jpg`;
+      const isLast = index === poses.length - 1;
+
+      const card = document.createElement("div");
+      card.className = `pose-card ${isLast ? 'last' : ''}`;
+      card.innerHTML = `
+        <img src="${imagePath}" alt="${poseName}" onerror="this.src='poses/fallback.jpg'" />
+        <div class="pose-card-title">${poseName}</div>
+        <div class="pose-card-subtitle">${timeRange}</div>
+      `;
+      poseCardsContainer.appendChild(card);
+    });
+  </script>
+</body>
+</html>

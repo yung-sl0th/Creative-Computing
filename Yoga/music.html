@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Music Player</title>
+</head>
+<body style="margin:0; overflow:hidden">
+  <audio id="bg-music" autoplay loop></audio>
+
+  <script>
+    const tracks = [
+      "background-music.mp3",
+      "background-music-2.mp3",
+      "background-music-3.mp3"
+    ];
+
+    const audio = document.getElementById("bg-music");
+    let currentIndex = Math.floor(Math.random() * tracks.length);
+
+    // Try to autoplay after user interaction
+    const tryPlay = () => {
+      audio.src = tracks[currentIndex];
+      audio.muted = false; // Ensure it's not muted
+      audio.play().catch((err) => {
+        console.log("Autoplay blocked:", err);
+      });
+    };
+
+    // Set up interval for changing tracks every 3 minutes
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % tracks.length;
+      audio.src = tracks[currentIndex];
+      audio.play();
+    }, 180000);
+
+    // Try to play immediately and also on user interaction
+    tryPlay();
+    document.addEventListener("click", tryPlay);
+  </script>
+</body>
+</html>

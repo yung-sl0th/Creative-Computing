@@ -1,7 +1,10 @@
 let particles = [];
 
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  clear();
+  background(255, 0);
   angleMode(DEGREES);
   noStroke();
   for (let i = 0; i < 300; i++) {
@@ -9,8 +12,10 @@ function setup() {
   }
 }
 
+
 function draw() {
   drawMetallicBackground();
+
 
   translate(width / 2, height / 2);
   colorMode(HSB);
@@ -19,6 +24,7 @@ function draw() {
     p.display();
   }
 }
+
 
 function drawMetallicBackground() {
   colorMode(RGB);
@@ -30,10 +36,12 @@ function drawMetallicBackground() {
   }
 }
 
+
 class Particle {
   constructor() {
     this.reset();
   }
+
 
   reset() {
     this.angle = random(360);
@@ -43,12 +51,14 @@ class Particle {
     this.hue = map(this.radius, 50, 250, 200, 330);
   }
 
+
   update() {
     this.angle += this.speed;
     if (this.angle > 360) {
       this.reset();
     }
   }
+
 
   display() {
     let x = this.radius * cos(this.angle);
@@ -58,6 +68,10 @@ class Particle {
   }
 }
 
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
+
+

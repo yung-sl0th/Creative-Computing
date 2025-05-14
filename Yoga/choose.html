@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Your Sequence</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #c4a0ff, #a0d2ff);
+    }
+    .top-nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      gap: 10px;
+    }
+    .top-nav button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .pose-section {
+      padding: 30px;
+    }
+    .pose-category {
+      margin-bottom: 60px;
+    }
+    .pose-category h2 {
+      font-size: 26px;
+      margin: 10px 0 15px;
+      color: #2c2c2c;
+      padding-left: 20px;
+    }
+    .carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .carousel-inner {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      transition: transform 0.5s ease;
+      scroll-behavior: smooth;
+      padding: 10px 40px;
+    }
+    .carousel-inner::-webkit-scrollbar {
+      display: none;
+    }
+    .pose-card {
+      flex: 0 0 180px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      overflow: hidden;
+      padding: 10px;
+      transition: 0.2s;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    .pose-card.selected {
+      border-color: #6c63ff;
+      box-shadow: 0 0 12px rgba(108, 99, 255, 0.6);
+    }
+    .pose-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+    }
+    .pose-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .pose-time {
+      font-style: italic;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .scroll-btn {
+      background: white;
+      border: none;
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .scroll-btn.left {
+      left: 10px;
+    }
+    .scroll-btn.right {
+      right: 10px;
+    }
+    .scroll-btn:hover {
+      background: #e0dcff;
+      box-shadow: 0 0 12px #6c63ff;
+    }
+    .floating-sidebar {
+      position: fixed;
+      right: 20px;
+      top: 80px;
+      width: 260px;
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      display: none;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .floating-sidebar.visible {
+      display: block;
+    }
+    .floating-sidebar h3 {
+      margin: 0 0 10px;
+    }
+    .floating-sidebar .pose-item {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .floating-sidebar .total-time {
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    .floating-sidebar button {
+      margin-top: 12px;
+      margin-right: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      background: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .modal-content input {
+      width: 80%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .modal-content button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <button onclick="window.location.href='index.html'">Return to Home</button>
+    <button onclick="launchMusic()">🔊 Music</button>
+  </div>
+
+  <div class="pose-section" id="pose-section"></div>
+  <div class="floating-sidebar" id="sidebar">
+    <h3>Your Sequence</h3>
+    <div id="sequenceList"></div>
+    <div class="total-time" id="totalTime"></div>
+    <button onclick="clearSelection()">Clear All</button>
+    <button onclick="promptSequenceName()">Create My Sequence</button>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h3>Name your sequence</h3>
+      <input type="text" id="sequenceNameInput" placeholder="My Awesome Sequence" />
+      <br>
+      <button onclick="submitSequenceName()">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    function launchMusic() {
+      if (!window.musicPlayer || window.musicPlayer.closed) {
+        window.musicPlayer = window.open(
+          'music.html',
+          'MusicWindow',
+          'width=200,height=100,left=200,top=200'
+        );
+      } else {
+        window.musicPlayer.focus();
+      }
+    }
+
+    document.addEventListener("click", () => {
+      launchMusic();
+    }, { once: true });
+
+    const sidebar = document.getElementById("sidebar");
+    const sequenceList = document.getElementById("sequenceList");
+    const totalTime = document.getElementById("totalTime");
+
+    const posesByCategory = {
+      "Legs": ["Butterfly Stretch", "Seated Forward Fold", "Low Lunge", "Low Lunge to Crescent Lunge", "Pigeon Pose", "Lizard Lunge", "Happy Baby", "Goddess Pose Pulses", "Goddess Pose Flow", "Jump Squats", "Jumping Jacks", "Warrior II", "Crescent Lunge", "Frog Pose", "Bridge Pose", "Supine Twist"],
+      "Arms": ["Neck Rolls", "Shoulder Rolls", "Thread the Needle", "Puppy Pose", "Eagle Arms", "Cow Face Arms", "Supported Fish Pose", "Sun Salutation A", "Sun Salutation B", "Chaturanga", "Chaturanga to Up Dog", "Chaturanga to Up Dog to Down Dog", "Dolphin Pose", "Dolphin Dips", "Plank to Down Dog", "Forearm Plank", "Reverse Tabletop"],
+      "Back": ["Cat-Cow", "Child’s Pose", "Supine Twist", "Knees to Chest", "Sphinx Pose", "Reclined Twist", "Reclining Twist", "Happy Baby", "Bridge Pulses", "Chair Pose", "Warrior I", "Down Dog to Plank", "Upward Facing Dog", "Locust Pose", "Camel Pose"],
+      "Core": ["Figure Four Stretch", "Glute Pulses", "Plank to Down Dog", "Forearm Plank", "Chair Pose", "Boat Pose", "Bicycle Crunches", "Side Plank", "Leg Raises", "Dead Bug", "Mountain Climbers", "Crunches", "High Boat", "Side Crunches", "Flutter Kicks"],
+      "Cooldown": ["Savasana", "Reclined Bound Angle", "Supported Fish Pose", "Seated Twist", "Legs Up the Wall", "Child’s Pose", "Supine Bound Angle", "Corpse Pose", "Reclining Hero Pose", "Happy Baby", "Knees to Chest", "Deep Breathing", "Seated Meditation", "Side-Lying Twist", "Lying Butterfly"]
+    };
+
+    let selectedPoses = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const section = document.getElementById("pose-section");
+      for (let category in posesByCategory) {
+        const catDiv = document.createElement("div");
+        catDiv.className = "pose-category";
+
+        const title = document.createElement("h2");
+        title.textContent = category;
+        catDiv.appendChild(title);
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "carousel-wrapper";
+
+        const leftBtn = document.createElement("button");
+        leftBtn.className = "scroll-btn left";
+        leftBtn.innerHTML = "←";
+
+        const rightBtn = document.createElement("button");
+        rightBtn.className = "scroll-btn right";
+        rightBtn.innerHTML = "→";
+
+        const carousel = document.createElement("div");
+        carousel.className = "carousel-inner";
+
+        leftBtn.onclick = () => carousel.scrollBy({ left: -300, behavior: "smooth" });
+        rightBtn.onclick = () => carousel.scrollBy({ left: 300, behavior: "smooth" });
+
+        posesByCategory[category].forEach(pose => {
+          const card = document.createElement("div");
+          card.className = "pose-card";
+          card.innerHTML = `
+            <img src="poses/${pose}.jpg" alt="${pose}" onerror="this.src='poses/fallback.jpg'" />
+            <div class="pose-title">${pose}</div>
+            <div class="pose-time">2–4 min</div>
+          `;
+          card.onclick = () => togglePoseSelection(pose, category, card);
+          carousel.appendChild(card);
+        });
+
+        wrapper.appendChild(leftBtn);
+        wrapper.appendChild(carousel);
+        wrapper.appendChild(rightBtn);
+        catDiv.appendChild(wrapper);
+        section.appendChild(catDiv);
+      }
+    });
+
+    function togglePoseSelection(pose, category, card) {
+      const index = selectedPoses.findIndex(p => p.name === pose);
+      if (index > -1) {
+        selectedPoses.splice(index, 1);
+        card.classList.remove("selected");
+      } else {
+        selectedPoses.push({ name: pose, category });
+        card.classList.add("selected");
+      }
+      updateSidebar();
+    }
+
+    function updateSidebar() {
+      if (selectedPoses.length === 0) {
+        sidebar.classList.remove("visible");
+        return;
+      }
+      sidebar.classList.add("visible");
+      sequenceList.innerHTML = "";
+      let total = 0;
+      selectedPoses.forEach((p, i) => {
+        total += 3;
+        const div = document.createElement("div");
+        div.className = "pose-item";
+        div.innerHTML = `<strong>${p.category}</strong>: ${p.name} – 3 min <button onclick="removePose(${i})">x</button>`;
+        sequenceList.appendChild(div);
+      });
+      totalTime.textContent = `Total Duration: ${total} min`;
+    }
+
+    function removePose(index) {
+      const removed = selectedPoses.splice(index, 1)[0];
+      document.querySelectorAll(".pose-card").forEach(card => {
+        if (card.textContent.includes(removed.name)) {
+          card.classList.remove("selected");
+        }
+      });
+      updateSidebar();
+    }
+
+    function clearSelection() {
+      selectedPoses = [];
+      document.querySelectorAll(".pose-card.selected").forEach(card => card.classList.remove("selected"));
+      updateSidebar();
+    }
+
+    function promptSequenceName() {
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function submitSequenceName() {
+      const name = document.getElementById("sequenceNameInput").value.trim();
+      if (!name || selectedPoses.length === 0) return;
+      sessionStorage.setItem("sequenceName", name);
+      sessionStorage.setItem("sequencePoses", JSON.stringify(selectedPoses));
+      window.location.href = "final-sequence.html";
+    }
+  </script>
+</body>
+</html>

@@ -3,45 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Yoga Routine Generator</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Yoga Flow Launch</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #c4a0ff, #a0d2ff);
+      overflow-x: hidden;
+    }
+
+    .launch-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .hero-image {
+      max-width: 600px;
+      width: 100%;
+      border-radius: 20px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .start-button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      background-color: white;
+      color: #6c6cff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .start-button:hover {
+      transform: scale(1.05);
+      background-color: #f0f0ff;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <h1>Create Your <br><span>Yoga Flow</span></h1>
-
-    <div class="section" id="customization-screen">
-      <p>What body part feels tight?</p>
-      <div class="choices" id="body-part">
-        <button data-value="shoulders">Shoulders</button>
-        <button data-value="hips">Hips</button>
-        <button data-value="lower-back">Lower Back</button>
-      </div>
-
-      <p>How long do you want to move?</p>
-      <div class="choices" id="duration">
-        <button data-value="short">10–20 min</button>
-        <button data-value="long">30–40 min</button>
-      </div>
-
-      <p>Choose your pace</p>
-      <div class="choices" id="pace">
-        <button data-value="slow">Slow & Recovery</button>
-        <button data-value="fast">Energizing</button>
-      </div>
-
-      <button id="generate-routine">Generate My Flow</button>
-    </div>
-
-    <div id="result-screen" class="hidden">
-      <div id="avatar-room"></div>
-      <div id="routine-text"></div>
-      <button id="start-over">Start Over</button>
+  <canvas id="background"></canvas>
+  <div class="launch-container content">
+    <img src="yoga-header.png" alt="Yoga Pose" class="hero-image" />
+    <h1>Begin To Breathe</h1>
+    <p>Find your flow with a personalized yoga sequence. No stress. No guesswork.</p>
+    <div class="button-group">
+      <button class="start-button" onclick="window.location.href='generator.html'">Generate a Sequence</button>
+      <button class="start-button" onclick="window.location.href='choose.html'">Choose My Sequence</button>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script src="background.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>

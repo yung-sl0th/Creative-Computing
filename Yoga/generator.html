@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yoga Sequence Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #c2a0fb, #a0d2fb);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .box {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      text-align: center;
+      width: 320px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s ease;
+    }
+
+    select:focus {
+      border-color: #918bff;
+      outline: none;
+    }
+
+    .btn {
+      background-color: #918bff;
+      color: white;
+      padding: 12px 20px;
+      margin-top: 10px;
+      border: none;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background-color: #7c76e5;
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Sequence Builder</h1>
+
+    <label for="body-part-selector">Choose a Body Part:</label>
+    <select id="body-part-selector">
+      <option value="">Select</option>
+      <option value="arms">Arms</option>
+      <option value="legs">Legs</option>
+      <option value="back">Back</option>
+      <option value="core">Core</option>
+    </select>
+
+    <label for="duration-selector">Duration:</label>
+    <select id="duration-selector">
+      <option value="">Select</option>
+      <option value="short">10–20 min</option>
+      <option value="long">30–40 min</option>
+    </select>
+
+    <label for="pace-selector">Pace:</label>
+    <select id="pace-selector">
+      <option value="">Select</option>
+      <option value="slow">Slow & Recovery</option>
+      <option value="fast">Fast & Energizing</option>
+    </select>
+
+    <button id="generate-button" class="btn">Generate My Flow</button>
+    <a href="index.html">
+      <button class="btn">⬅ Return to Home</button>
+    </a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
