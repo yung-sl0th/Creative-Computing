@@ -30,9 +30,94 @@
       cursor: pointer;
     }
 
+    .legend {
+      margin: 100px 40px 20px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .legend .beginner { background-color: #d63384; }
+    .legend .intermediate { background-color: #6f42c1; }
+    .legend .advanced { background-color: #0d6efd; }
+
+    .filter-controls {
+      display: flex;
+      gap: 10px;
+      margin: 0 40px 30px;
+    }
+
+    .filter-controls button {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #eaeaea;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .filter-controls button:hover {
+      background-color: #d0d0ff;
+    }
+
+    .filter-controls button.active {
+      background-color: #6c63ff;
+      color: white;
+    }
+
+    #drop-zone {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      border: 2px dashed #6c63ff;
+      border-radius: 12px;
+      padding: 10px 15px;
+      width: 260px;
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    #drop-zone p {
+      margin: 0;
+      font-weight: bold;
+      color: #6c63ff;
+      font-size: 14px;
+    }
+
+    #drop-count {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    #save-button {
+      margin-top: 8px;
+      padding: 5px 10px;
+      background-color: #6c63ff;
+      color: white;
+      font-size: 13px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     .pose-section {
       padding: 30px;
-      margin-top: 80px;
+      margin-top: 120px;
     }
 
     .pose-category {
@@ -59,82 +144,51 @@
     }
 
     .pose-card {
-      flex: 0 0 180px;
+      flex: 0 0 220px;
       background: white;
       border-radius: 16px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
       text-align: center;
       overflow: hidden;
-      padding: 10px;
+      padding: 16px 12px;
       cursor: grab;
       border: 3px solid transparent;
       transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 320px;
     }
 
     .pose-card img {
       width: 100%;
-      height: 140px;
+      height: 150px;
       object-fit: contain;
+      margin-bottom: 10px;
     }
 
     .pose-title {
       font-weight: bold;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .pose-time {
-      font-style: italic;
-      font-size: 14px;
+      font-size: 17px;
       margin-top: 4px;
     }
 
-    .pose-card[data-level="beginner"] {
-      border: 3px solid #d63384;
-    }
-
-    .pose-card[data-level="intermediate"] {
-      border: 3px solid #6f42c1;
-    }
-
-    .pose-card[data-level="advanced"] {
-      border: 3px solid #0d6efd;
-    }
-
     .level-tag {
-      font-size: 12px;
+      font-size: 13px;
       margin-top: 6px;
       color: #333;
       font-style: italic;
     }
-    .legend {
-    margin: 100px 40px 20px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
+
+    .pose-time {
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 6px;
     }
 
-    .legend-dot {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    margin-right: 6px;
-    }
-
-    .legend .beginner {
-    background-color: #d63384;
-    }
-
-    .legend .intermediate {
-    background-color: #6f42c1;
-    }
-
-    .legend .advanced {
-    background-color: #0d6efd;
-  }
+    .pose-card[data-level="beginner"] { border: 3px solid #d63384; }
+    .pose-card[data-level="intermediate"] { border: 3px solid #6f42c1; }
+    .pose-card[data-level="advanced"] { border: 3px solid #0d6efd; }
   </style>
 </head>
 <body>
@@ -143,11 +197,24 @@
     <button onclick="launchMusic()">🔊 Music</button>
   </div>
 
+  <div id="drop-zone" ondrop="handleDrop(event)" ondragover="allowDrop(event)">
+    <p>🧘 Drop cards here</p>
+    <div id="drop-count">0 poses added</div>
+    <button id="save-button" onclick="saveSequence()">Save Sequence</button>
+  </div>
+
   <div class="legend">
     <strong>Difficulty Levels:</strong>
     <span class="legend-dot beginner"></span> Beginner
     <span class="legend-dot intermediate"></span> Intermediate
     <span class="legend-dot advanced"></span> Advanced
+  </div>
+
+  <div class="filter-controls">
+    <button data-filter="all" class="active">All</button>
+    <button data-filter="beginner">Beginner</button>
+    <button data-filter="intermediate">Intermediate</button>
+    <button data-filter="advanced">Advanced</button>
   </div>
 
   <div class="pose-section" id="pose-section"></div>
@@ -161,9 +228,33 @@
       }
     }
 
-    document.addEventListener("click", () => {
-      launchMusic();
-    }, { once: true });
+    const dropPoses = [];
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      const data = event.dataTransfer.getData("text/plain");
+      if (!data) return;
+      const { name, category } = JSON.parse(data);
+
+      if (!dropPoses.find(p => p.name === name)) {
+        dropPoses.push({ name, category });
+        updateDropCount();
+      }
+    }
+
+    function updateDropCount() {
+      document.getElementById("drop-count").textContent = `${dropPoses.length} pose${dropPoses.length !== 1 ? 's' : ''} added`;
+    }
+
+    function saveSequence() {
+      if (dropPoses.length === 0) return alert("No poses to save.");
+      sessionStorage.setItem("sequencePoses", JSON.stringify(dropPoses));
+      alert("Sequence saved!");
+    }
 
     const posesByCategory = {
       "Legs": [
@@ -276,6 +367,9 @@
           card.className = "pose-card";
           card.setAttribute("draggable", "true");
           card.setAttribute("data-level", level);
+          card.ondragstart = (e) => {
+            e.dataTransfer.setData("text/plain", JSON.stringify({ name, category }));
+          };
 
           card.innerHTML = `
             <img src="poses/${name}.jpg" alt="${name}" onerror="this.src='poses/fallback.jpg'" />
@@ -290,6 +384,19 @@
         catDiv.appendChild(wrapper);
         section.appendChild(catDiv);
       }
+
+      document.querySelectorAll('.filter-controls button').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.filter-controls button').forEach(b => b.classList.remove('active'));
+          button.classList.add('active');
+
+          const filter = button.dataset.filter;
+          document.querySelectorAll('.pose-card').forEach(card => {
+            const level = card.dataset.level;
+            card.style.display = (filter === 'all' || level === filter) ? 'flex' : 'none';
+          });
+        });
+      });
     });
   </script>
 </body>
