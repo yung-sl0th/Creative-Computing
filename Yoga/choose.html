@@ -32,6 +32,7 @@
 
     .pose-section {
       padding: 30px;
+      margin-top: 300px;
     }
 
     .pose-category {
@@ -99,16 +100,19 @@
     }
 
     .drop-zone {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 260px;
       height: 260px;
-      margin: 40px auto;
+      z-index: 10;
       border-radius: 50%;
       background: #f4f4f8;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
       flex-direction: column;
     }
 
