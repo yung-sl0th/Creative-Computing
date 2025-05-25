@@ -193,6 +193,21 @@ Choose.html
       border-radius: 6px;
       cursor: pointer;
     }
+    .pose-card[data-level="beginner"] {
+  border: 3px solid #a8e6cf; /* green */
+    }
+    .pose-card[data-level="intermediate"] {
+    border: 3px solid #ffd3b6; /* orange */
+    }
+    .pose-card[data-level="advanced"] {
+    border: 3px solid #ffaaa5; /* pink/red */
+    }
+    .pose-card .level-tag {
+    font-size: 12px;
+    margin-top: 6px;
+    color: #333;
+    font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -241,12 +256,94 @@ Choose.html
     const totalTime = document.getElementById("totalTime");
 
     const posesByCategory = {
-      "Legs": ["Butterfly Stretch", "Seated Forward Fold", "Low Lunge", "Low Lunge to Crescent Lunge", "Pigeon Pose", "Lizard Lunge", "Happy Baby", "Goddess Pose Pulses", "Goddess Pose Flow", "Jump Squats", "Jumping Jacks", "Warrior II", "Crescent Lunge", "Frog Pose", "Bridge Pose", "Supine Twist"],
-      "Arms": ["Neck Rolls", "Shoulder Rolls", "Thread the Needle", "Puppy Pose", "Eagle Arms", "Cow Face Arms", "Supported Fish Pose", "Sun Salutation A", "Sun Salutation B", "Chaturanga", "Chaturanga to Up Dog", "Chaturanga to Up Dog to Down Dog", "Dolphin Pose", "Dolphin Dips", "Plank to Down Dog", "Forearm Plank", "Reverse Tabletop"],
-      "Back": ["Cat-Cow", "Child’s Pose", "Supine Twist", "Knees to Chest", "Sphinx Pose", "Reclined Twist", "Reclining Twist", "Happy Baby", "Bridge Pulses", "Chair Pose", "Warrior I", "Down Dog to Plank", "Upward Facing Dog", "Locust Pose", "Camel Pose"],
-      "Core": ["Figure Four Stretch", "Glute Pulses", "Plank to Down Dog", "Forearm Plank", "Chair Pose", "Boat Pose", "Bicycle Crunches", "Side Plank", "Leg Raises", "Dead Bug", "Mountain Climbers", "Crunches", "High Boat", "Side Crunches", "Flutter Kicks"],
-      "Cooldown": ["Savasana", "Reclined Bound Angle", "Supported Fish Pose", "Seated Twist", "Legs Up the Wall", "Child’s Pose", "Supine Bound Angle", "Corpse Pose", "Reclining Hero Pose", "Happy Baby", "Knees to Chest", "Deep Breathing", "Seated Meditation", "Side-Lying Twist", "Lying Butterfly"]
-    };
+  "Legs": [
+    { name: "Butterfly Stretch", level: "beginner" },
+    { name: "Seated Forward Fold", level: "beginner" },
+    { name: "Happy Baby", level: "beginner" },
+    { name: "Goddess Pose Pulses", level: "beginner" },
+    { name: "Goddess Pose Flow", level: "beginner" },
+    { name: "Bridge Pose", level: "beginner" },
+    { name: "Supine Twist", level: "beginner" },
+    { name: "Low Lunge", level: "intermediate" },
+    { name: "Pigeon Pose", level: "intermediate" },
+    { name: "Lizard Lunge", level: "intermediate" },
+    { name: "Warrior II", level: "intermediate" },
+    { name: "Crescent Lunge", level: "intermediate" },
+    { name: "Frog Pose", level: "intermediate" },
+    { name: "Low Lunge to Crescent Lunge", level: "advanced" },
+    { name: "Jump Squats", level: "advanced" },
+    { name: "Jumping Jacks", level: "advanced" }
+  ],
+  "Arms": [
+    { name: "Neck Rolls", level: "beginner" },
+    { name: "Shoulder Rolls", level: "beginner" },
+    { name: "Thread the Needle", level: "beginner" },
+    { name: "Puppy Pose", level: "beginner" },
+    { name: "Eagle Arms", level: "beginner" },
+    { name: "Cow Face Arms", level: "beginner" },
+    { name: "Supported Fish Pose", level: "beginner" },
+    { name: "Sun Salutation A", level: "intermediate" },
+    { name: "Sun Salutation B", level: "intermediate" },
+    { name: "Chaturanga", level: "intermediate" },
+    { name: "Chaturanga to Up Dog", level: "intermediate" },
+    { name: "Plank to Down Dog", level: "intermediate" },
+    { name: "Reverse Tabletop", level: "intermediate" },
+    { name: "Chaturanga to Up Dog to Down Dog", level: "advanced" },
+    { name: "Dolphin Pose", level: "advanced" },
+    { name: "Dolphin Dips", level: "advanced" },
+    { name: "Forearm Plank", level: "advanced" }
+  ],
+  "Back": [
+    { name: "Cat-Cow", level: "beginner" },
+    { name: "Child’s Pose", level: "beginner" },
+    { name: "Supine Twist", level: "beginner" },
+    { name: "Reclined Twist", level: "beginner" },
+    { name: "Happy Baby", level: "beginner" },
+    { name: "Chair Pose", level: "beginner" },
+    { name: "Knees to Chest", level: "intermediate" },
+    { name: "Sphinx Pose", level: "intermediate" },
+    { name: "Reclining Twist", level: "intermediate" },
+    { name: "Bridge Pulses", level: "intermediate" },
+    { name: "Warrior I", level: "intermediate" },
+    { name: "Upward Facing Dog", level: "intermediate" },
+    { name: "Locust Pose", level: "intermediate" },
+    { name: "Down Dog to Plank", level: "advanced" },
+    { name: "Camel Pose", level: "advanced" }
+  ],
+  "Core": [
+    { name: "Figure Four Stretch", level: "beginner" },
+    { name: "Glute Pulses", level: "beginner" },
+    { name: "Plank to Down Dog", level: "beginner" },
+    { name: "Chair Pose", level: "beginner" },
+    { name: "Bicycle Crunches", level: "beginner" },
+    { name: "Dead Bug", level: "beginner" },
+    { name: "Crunches", level: "beginner" },
+    { name: "High Boat", level: "beginner" },
+    { name: "Boat Pose", level: "intermediate" },
+    { name: "Side Plank", level: "intermediate" },
+    { name: "Leg Raises", level: "intermediate" },
+    { name: "Mountain Climbers", level: "intermediate" },
+    { name: "Side Crunches", level: "intermediate" },
+    { name: "Forearm Plank", level: "advanced" },
+    { name: "Flutter Kicks", level: "advanced" }
+  ],
+  "Cooldown": [
+    { name: "Savasana", level: "beginner" },
+    { name: "Reclined Bound Angle", level: "beginner" },
+    { name: "Seated Twist", level: "beginner" },
+    { name: "Child’s Pose", level: "beginner" },
+    { name: "Supine Bound Angle", level: "beginner" },
+    { name: "Corpse Pose", level: "beginner" },
+    { name: "Knees to Chest", level: "beginner" },
+    { name: "Supported Fish Pose", level: "intermediate" },
+    { name: "Legs Up the Wall", level: "intermediate" },
+    { name: "Reclining Hero Pose", level: "intermediate" },
+    { name: "Side-Lying Twist", level: "intermediate" },
+    { name: "Deep Breathing", level: "advanced" },
+    { name: "Seated Meditation", level: "advanced" },
+    { name: "Lying Butterfly", level: "advanced" }
+  ]
+};
 
     let selectedPoses = [];
 
@@ -277,17 +374,21 @@ Choose.html
         leftBtn.onclick = () => carousel.scrollBy({ left: -300, behavior: "smooth" });
         rightBtn.onclick = () => carousel.scrollBy({ left: 300, behavior: "smooth" });
 
-        posesByCategory[category].forEach(pose => {
-          const card = document.createElement("div");
-          card.className = "pose-card";
-          card.innerHTML = `
-            <img src="poses/${pose}.jpg" alt="${pose}" onerror="this.src='poses/fallback.jpg'" />
-            <div class="pose-title">${pose}</div>
-            <div class="pose-time">2–4 min</div>
-          `;
-          card.onclick = () => togglePoseSelection(pose, category, card);
-          carousel.appendChild(card);
-        });
+        .pose-card[data-level="beginner"] {
+        border: 3px solid #a8e6cf; /* green */
+        }
+        .pose-card[data-level="intermediate"] {
+        border: 3px solid #ffd3b6; /* orange */
+        }
+        .pose-card[data-level="advanced"] {
+        border: 3px solid #ffaaa5; /* pink/red */
+        }
+        .pose-card .level-tag {
+        font-size: 12px;
+        margin-top: 6px;
+        color: #333;
+        font-style: italic;
+        }
 
         wrapper.appendChild(leftBtn);
         wrapper.appendChild(carousel);
