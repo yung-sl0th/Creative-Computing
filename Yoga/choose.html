@@ -89,17 +89,16 @@
       margin-top: 4px;
     }
 
-    /* 🎨 Difficulty Colors */
     .pose-card[data-level="beginner"] {
-      border: 3px solid #a8e6cf;
+      border: 3px solid #d63384;
     }
 
     .pose-card[data-level="intermediate"] {
-      border: 3px solid #ffd3b6;
+      border: 3px solid #6f42c1;
     }
 
     .pose-card[data-level="advanced"] {
-      border: 3px solid #ffaaa5;
+      border: 3px solid #0d6efd;
     }
 
     .level-tag {
@@ -108,12 +107,47 @@
       color: #333;
       font-style: italic;
     }
+    .legend {
+    margin: 100px 40px 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    }
+
+    .legend-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 6px;
+    }
+
+    .legend .beginner {
+    background-color: #d63384;
+    }
+
+    .legend .intermediate {
+    background-color: #6f42c1;
+    }
+
+    .legend .advanced {
+    background-color: #0d6efd;
+  }
   </style>
 </head>
 <body>
   <div class="top-nav">
     <button onclick="window.location.href='index.html'">Return to Home</button>
     <button onclick="launchMusic()">🔊 Music</button>
+  </div>
+
+  <div class="legend">
+    <strong>Difficulty Levels:</strong>
+    <span class="legend-dot beginner"></span> Beginner
+    <span class="legend-dot intermediate"></span> Intermediate
+    <span class="legend-dot advanced"></span> Advanced
   </div>
 
   <div class="pose-section" id="pose-section"></div>
