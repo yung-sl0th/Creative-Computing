@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Choose Your Sequence</title>
   <style>
     body {
@@ -30,8 +30,61 @@
       cursor: pointer;
     }
 
+    #drop-zone {
+      position: fixed;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 180px;
+      z-index: 1000;
+    }
+
+    #drop-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px dashed #6c63ff;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .drop-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      font-size: 13px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .drop-overlay p {
+      margin: 0;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 0 5px rgba(0,0,0,0.6);
+    }
+
+    .drop-overlay button {
+      margin-top: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
     .legend {
-      margin: 100px 40px 20px;
+      margin: 320px 40px 20px;
       font-size: 14px;
       display: flex;
       align-items: center;
@@ -76,48 +129,8 @@
       color: white;
     }
 
-    #drop-zone {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: white;
-      border: 2px dashed #6c63ff;
-      border-radius: 12px;
-      padding: 10px 15px;
-      width: 260px;
-      text-align: center;
-      z-index: 1000;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    #drop-zone p {
-      margin: 0;
-      font-weight: bold;
-      color: #6c63ff;
-      font-size: 14px;
-    }
-
-    #drop-count {
-      margin-top: 5px;
-      font-size: 13px;
-      color: #333;
-    }
-
-    #save-button {
-      margin-top: 8px;
-      padding: 5px 10px;
-      background-color: #6c63ff;
-      color: white;
-      font-size: 13px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
     .pose-section {
       padding: 30px;
-      margin-top: 120px;
     }
 
     .pose-category {
@@ -198,9 +211,11 @@
   </div>
 
   <div id="drop-zone" ondrop="handleDrop(event)" ondragover="allowDrop(event)">
-    <p>🧘 Drop cards here</p>
-    <div id="drop-count">0 poses added</div>
-    <button id="save-button" onclick="saveSequence()">Save Sequence</button>
+    <img src="poses/brain-watering.jpg" alt="Drop here" id="drop-img" />
+    <div class="drop-overlay">
+      <p><span id="drop-count">0</span> poses added</p>
+      <button onclick="saveSequence()">💾 Save</button>
+    </div>
   </div>
 
   <div class="legend">
@@ -239,7 +254,6 @@
       const data = event.dataTransfer.getData("text/plain");
       if (!data) return;
       const { name, category } = JSON.parse(data);
-
       if (!dropPoses.find(p => p.name === name)) {
         dropPoses.push({ name, category });
         updateDropCount();
@@ -247,7 +261,7 @@
     }
 
     function updateDropCount() {
-      document.getElementById("drop-count").textContent = `${dropPoses.length} pose${dropPoses.length !== 1 ? 's' : ''} added`;
+      document.getElementById("drop-count").textContent = dropPoses.length;
     }
 
     function saveSequence() {
