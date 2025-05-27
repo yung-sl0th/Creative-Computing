@@ -1,0 +1,208 @@
+<div class="top-nav">
+</div>
+
+<div class="pose-image-wrapper">
+  <div class="pose-container">
+    <button class="arrow-btn" onclick="rotatePose(-1)">←</button>
+    <img id="poseImage" src="poses/Generator_Pose_New.png" alt="Clickable Pose" class="pose-image" usemap="#bodymap-front" />
+    <button class="arrow-btn" onclick="rotatePose(1)">→</button>
+  </div>
+  <map name="bodymap-front" id="bodymap-front">
+    <!-- Front view areas -->
+    <area shape="rect" coords="60,100,240,160" alt="Arms" onclick="selectBodyPart('arms')" />
+    <area shape="rect" coords="130,160,200,220" alt="Core" onclick="selectBodyPart('core')" />
+    <area shape="rect" coords="90,230,240,360" alt="Legs" onclick="selectBodyPart('legs')" />
+  </map>
+  <map name="bodymap-back" id="bodymap-back">
+    <!-- Back view areas -->
+    <area shape="rect" coords="130,160,200,240" alt="Back" onclick="selectBodyPart('back')" />
+    <area shape="rect" coords="60,100,240,160" alt="Arms" onclick="selectBodyPart('arms')" />
+    <area shape="rect" coords="90,230,240,360" alt="Legs" onclick="selectBodyPart('legs')" />
+  </map>
+</div>
+<p id="selectedPart">Selected Body Part: <strong>None</strong></p>
+
+<label for="duration-selector">Duration:</label>
+<select id="duration-selector">
+  <option value="">Select</option>
+  <option value="short">10–20 min</option>
+  <option value="long">30–40 min</option>
+</select>
+
+<label for="pace-selector">Pace:</label>
+<select id="pace-selector">
+  <option value="">Select</option>
+  <option value="slow">Slow & Recovery</option>
+  <option value="fast">Fast & Energizing</option>
+</select>
+
+<button class="btn" onclick="generateFlow()">Generate My Flow</button>
+
+<script>
+  let selectedPart = "";
+  let currentView = 0;
+  const poseViews = ["poses/Generator_Pose_New.png", "poses/view3.png"];
+
+  function returnHome() {
+    document.getElementById("main-content").innerHTML = "";
+    document.getElementById("home-section").style.display = "flex";
+    window.scrollTo(0, 0);
+  }
+
+
+  function selectBodyPart(part) {
+    selectedPart = part;
+    document.getElementById("selectedPart").innerHTML = `Selected Body Part: <strong>${capitalizeFirstLetter(part)}</strong>`;
+  }
+
+
+  function launchMusic() {
+    if (!window.musicPlayer || window.musicPlayer.closed) {
+      window.musicPlayer = window.open('music.html', 'MusicWindow', 'width=200,height=100,left=200,top=200');
+    } else {
+      window.musicPlayer.focus();
+    }
+  }
+
+
+  function generateFlow() {
+    const duration = document.getElementById("duration-selector").value;
+    const pace = document.getElementById("pace-selector").value;
+
+    if (!selectedPart || !duration || !pace) {
+      alert("Please select a body part, duration, and pace.");
+      return;
+    }
+
+    const posesByCategory = {
+      "legs": ["Butterfly Stretch", "Seated Forward Fold", "Low Lunge", "Low Lunge to Crescent Lunge", "Pigeon Pose", "Lizard Lunge", "Happy Baby", "Goddess Pose Pulses", "Goddess Pose Flow", "Jump Squats", "Jumping Jacks", "Warrior II", "Crescent Lunge", "Frog Pose", "Bridge Pose", "Supine Twist"],
+      "arms": ["Neck Rolls", "Shoulder Rolls", "Thread the Needle", "Puppy Pose", "Eagle Arms", "Cow Face Arms", "Supported Fish Pose", "Sun Salutation A", "Sun Salutation B", "Chaturanga", "Chaturanga to Up Dog", "Chaturanga to Up Dog to Down Dog", "Dolphin Pose", "Dolphin Dips", "Plank to Down Dog", "Forearm Plank", "Reverse Tabletop"],
+      "back": ["Cat-Cow", "Child’s Pose", "Supine Twist", "Knees to Chest", "Sphinx Pose", "Reclined Twist", "Reclining Twist", "Happy Baby", "Bridge Pulses", "Chair Pose", "Warrior I", "Down Dog to Plank", "Upward Facing Dog", "Locust Pose", "Camel Pose"],
+      "core": ["Figure Four Stretch", "Glute Pulses", "Plank to Down Dog", "Forearm Plank", "Chair Pose", "Boat Pose", "Bicycle Crunches", "Side Plank", "Leg Raises", "Dead Bug", "Mountain Climbers", "Crunches", "High Boat", "Side Crunches", "Flutter Kicks"]
+    };
+
+    const options = [...posesByCategory[selectedPart]];
+    const count = duration === "short" ? 3 : 5;
+    const range = duration === "short" ? [4, 6] : [6, 8];
+    const selected = [];
+
+    for (let i = 0; i < count && options.length > 0; i++) {
+      const index = Math.floor(Math.random() * options.length);
+      const pose = options.splice(index, 1)[0];
+      const minutes = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+      selected.push({ name: pose, category: capitalizeFirstLetter(selectedPart), minutes });
+    }
+
+    sessionStorage.setItem("sequenceName", "Generated Flow");
+    sessionStorage.setItem("sequencePoses", JSON.stringify(selected));
+    loadFragment("generated-flow-fragment.html");
+  }
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  function rotatePose(direction) {
+    currentView = (currentView + direction + poseViews.length) % poseViews.length;
+    const poseImage = document.getElementById("poseImage");
+    poseImage.src = poseViews[currentView];
+    poseImage.useMap = currentView === 0 ? "#bodymap-front" : "#bodymap-back";
+
+    selectedPart = "";
+    document.getElementById("selectedPart").innerHTML = `Selected Body Part: <strong>None</strong>`;
+  }
+
+  window.onload = () => rotatePose(0);
+</script>
+
+<style>
+  body {
+    background: linear-gradient(to right, #c4a0ff, #a0d2ff);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .top-nav {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    gap: 10px;
+  }
+
+  .top-nav button {
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .pose-image-wrapper {
+    text-align: center;
+    margin: 30px auto 10px;
+  }
+
+  .pose-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arrow-btn {
+    background-color: transparent;
+    color: #6c63ff;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+  }
+
+  .pose-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  label {
+    display: block;
+    margin: 20px auto 6px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+  }
+
+  select, .btn {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .btn {
+    background: #6c63ff;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .btn:hover {
+    background: #574de8;
+  }
+
+  #selectedPart {
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+  }
+</style>

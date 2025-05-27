@@ -1,41 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Music Player</title>
 </head>
-<body style="margin:0; overflow:hidden">
-  <audio id="bg-music" autoplay loop></audio>
+<body style="margin:0; overflow:hidden; background:transparent;">
+  <audio id="bg-music" loop></audio>
 
   <script>
+    const audio = document.getElementById("bg-music");
     const tracks = [
       "background-music.mp3",
       "background-music-2.mp3",
       "background-music-3.mp3"
     ];
 
-    const audio = document.getElementById("bg-music");
+    let isPlaying = false;
     let currentIndex = Math.floor(Math.random() * tracks.length);
+    audio.src = tracks[currentIndex];
 
-    // Try to autoplay after user interaction
-    const tryPlay = () => {
-      audio.src = tracks[currentIndex];
-      audio.muted = false; // Ensure it's not muted
-      audio.play().catch((err) => {
-        console.log("Autoplay blocked:", err);
-      });
-    };
+    // Play when triggered
+    window.addEventListener("message", (event) => {
+      if (event.data === "PLAY_MUSIC") {
+        playMusic();
+      } else if (event.data === "TOGGLE_MUSIC") {
+        if (isPlaying) {
+          audio.pause();
+          isPlaying = false;
+        } else {
+          playMusic();
+        }
+      } else if (event.data === "STOP_MUSIC") {
+        audio.pause();
+        audio.currentTime = 0;
+        isPlaying = false;
+      }
+    });
 
-    // Set up interval for changing tracks every 3 minutes
-    setInterval(() => {
+    function playMusic() {
+      audio.play().then(() => {
+        isPlaying = true;
+      }).catch(err => console.warn("Autoplay blocked:", err));
+    }
+
+    // Auto play next track when one ends
+    audio.addEventListener('ended', () => {
       currentIndex = (currentIndex + 1) % tracks.length;
       audio.src = tracks[currentIndex];
-      audio.play();
-    }, 180000);
-
-    // Try to play immediately and also on user interaction
-    tryPlay();
-    document.addEventListener("click", tryPlay);
+      playMusic();
+    });
   </script>
 </body>
 </html>

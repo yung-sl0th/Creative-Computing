@@ -7,11 +7,37 @@
   <link rel="stylesheet" href="style.css">
   <style>
     body {
+      
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #c4a0ff, #a0d2ff);
       overflow-x: hidden;
     }
+
+    
+    .top-left-nav {
+  position: fixed;
+  top: 20px;
+  left: 950px;
+  z-index: 999;
+  display: flex;
+  gap: 12px;
+}
+
+.top-left-nav button {
+  padding: 10px 18px;
+  font-size: 14px;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.top-left-nav button:hover {
+  background-color: #544be4;
+}
+
 
     .launch-container {
       display: flex;
@@ -77,20 +103,176 @@
       position: relative;
       z-index: 1;
     }
+
+    #main-content {
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
+  <div class="top-left-nav">
+    <button onclick="toggleMusic()" id="musicBtn">🎵 Music On</button>
+  
+    <a href="reflection-room.html">
+      <button>🧘 Enter Reflection Room</button>
+    </a>
+  
+    <a href="index.html">
+      <button>← Back to Home</button>
+    </a>
+  </div>
   <canvas id="background"></canvas>
-  <div class="launch-container content">
+
+  <div class="top-nav">
+  </div>
+
+  <div class="launch-container content" id="home-section">
     <img src="yoga-header.png" alt="Yoga Pose" class="hero-image" />
     <h1>Begin To Breathe</h1>
     <p>Find your flow with a personalized yoga sequence. No stress. No guesswork.</p>
     <div class="button-group">
-      <button class="start-button" onclick="window.location.href='generator.html'">Generate a Flow</button>
-      <button class="start-button" onclick="window.location.href='choose.html'">Choose My Flow</button>
+      <button class="start-button" onclick="loadGeneratorPage()">Generate a Sequence</button>
+      <button class="start-button" onclick="loadChoosePage()">Choose My Sequence</button>
     </div>
   </div>
 
+  <div id="main-content"></div>
+
   <script src="background.js"></script>
+  <script>
+    // Global music player handler
+let musicPlayer = null;
+
+function initMusicPlayer() {
+  if (!musicPlayer || musicPlayer.closed) {
+    musicPlayer = window.open(
+      "music.html",
+      "MusicWindow",
+      "width=1,height=1,left=-9999,top=-9999"
+    );
+
+    window.musicPlayer = musicPlayer;
+  }
+}
+
+function toggleMusic() {
+  initMusicPlayer(); // Ensure music player exists
+  if (musicPlayer) {
+    musicPlayer.postMessage("TOGGLE_MUSIC", "*");
+    const btn = document.getElementById("musicBtn");
+    if (btn) {
+      btn.textContent = btn.textContent.includes("On") ? "🔇 Music Off" : "🔊 Music On";
+    }
+  }
+}
+
+// Auto-init if consent previously granted
+window.addEventListener("DOMContentLoaded", () => {
+  const consent = sessionStorage.getItem("musicConsent");
+  if (consent === "yes") {
+    initMusicPlayer();
+    setTimeout(() => {
+      musicPlayer.postMessage("PLAY_MUSIC", "*");
+    }, 500);
+  }
+});
+
+  function loadFragment(fragmentPath) {
+  fetch(fragmentPath)
+    .then(res => res.text())
+    .then(html => {
+      const container = document.getElementById("main-content");
+      container.innerHTML = html;
+      document.getElementById("home-section").style.display = "none";
+      window.scrollTo(0, 0);
+
+      // Extract and execute scripts manually
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(script => {
+        const newScript = document.createElement("script");
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+
+      // Manually invoke sequence loader
+      if (fragmentPath.includes("generated-flow-fragment.html") && typeof loadGeneratedSequence === "function") {
+        loadGeneratedSequence();
+      }
+    })
+    .catch(err => console.error("Error loading fragment:", err));
+}
+
+
+  function returnHome() {
+    document.getElementById("main-content").innerHTML = "";
+    document.getElementById("home-section").style.display = "flex";
+    window.scrollTo(0, 0);
+  }
+
+  window.loadGeneratorPage = function () {
+    fetch("generator-fragment.html")
+      .then(res => res.text())
+      .then(html => {
+        const container = document.getElementById("main-content");
+        container.innerHTML = html;
+        document.getElementById("home-section").style.display = "none";
+        window.scrollTo(0, 0);
+
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(script => {
+          const newScript = document.createElement("script");
+          newScript.textContent = script.textContent;
+          document.body.appendChild(newScript);
+        });
+
+        setTimeout(() => {
+          if (typeof generateFlow === "function") generateFlow();
+        }, 100);
+      })
+      .catch(err => console.error("Error loading generator page:", err));
+  };
+
+  window.loadChoosePage = function () {
+  fetch("choose-fragment.html")
+    .then(res => res.text())
+    .then(html => {
+      const container = document.getElementById("main-content");
+      container.innerHTML = html;
+      document.getElementById("home-section").style.display = "none";
+      window.scrollTo(0, 0);
+
+      // Find and manually re-add any <script> tags from the HTML fragment
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(script => {
+        const newScript = document.createElement("script");
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+
+      // ✅ Call the initialization function defined inside the fragment
+      setTimeout(() => {
+        if (typeof initChoosePage === "function") {
+          initChoosePage();
+        } else {
+          console.warn("initChoosePage not available after fragment load.");
+        }
+      }, 100);
+    })
+    .catch(err => console.error("Error loading choose page:", err));
+};
+
+
+
+
+
+  </script>
 </body>
 </html>

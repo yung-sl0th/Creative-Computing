@@ -1,0 +1,123 @@
+<div class="top-nav">
+    <button onclick="toggleMusic()" id="musicBtn">🔊 Music On</button>
+    <button onclick="goBackToPoses()">⬅ Edit My Sequence</button>
+
+  </div>
+  
+  <h1 id="sequenceTitle">My Sequence</h1>
+  <div class="sequence-container" id="poseList"></div>
+  <div class="total-duration" id="totalDuration"></div>
+  
+  <script>
+    function loadFinalSequence() {
+      const name = sessionStorage.getItem("sequenceName") || "My Sequence";
+      const poses = JSON.parse(sessionStorage.getItem("sequencePoses")) || [];
+  
+      document.getElementById("sequenceTitle").textContent = name;
+      const poseList = document.getElementById("poseList");
+      const totalDuration = document.getElementById("totalDuration");
+  
+      let total = 0;
+      poseList.innerHTML = "";
+      if (!Array.isArray(poses) || poses.length === 0) {
+        poseList.innerHTML = "<p style='text-align:center;'>No poses selected yet. Please go back and build your sequence.</p>";
+        totalDuration.textContent = "";
+        return;
+      }
+  
+      poses.forEach(pose => {
+        const div = document.createElement("div");
+        div.className = "pose-card";
+        div.innerHTML = `
+          <img src="poses/${pose.name}.jpg" alt="${pose.name}" onerror="this.src='poses/fallback.jpg'" />
+          <div class="pose-title">${pose.name}</div>
+          <div class="pose-info">${pose.category} – 3 min</div>
+        `;
+        total += 3;
+        poseList.appendChild(div);
+      });
+  
+      totalDuration.textContent = `Total Duration: ${total} min`;
+    }
+  
+    function toggleMusic() {
+      if (window.musicPlayer && !window.musicPlayer.closed) {
+        window.musicPlayer.postMessage("TOGGLE_MUSIC", "*");
+        const btn = document.getElementById("musicBtn");
+        btn.textContent = btn.textContent.includes("On") ? "🔇 Music Off" : "🔊 Music On";
+      }
+    }
+
+    function goBackToPoses() {
+    const storedPoses = sessionStorage.getItem("sequencePoses") || "[]";
+    window.selectedPoses = JSON.parse(storedPoses);
+    loadFragment("choose-fragment.html");
+  }
+  
+    document.addEventListener("DOMContentLoaded", loadFinalSequence);
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #c4a0ff, #a0d2ff);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 32px;
+      color: white;
+    }
+    .sequence-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .pose-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      width: 200px;
+      padding: 10px;
+    }
+    .pose-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+    }
+    .pose-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 10px 0 4px;
+    }
+    .pose-info {
+      font-size: 14px;
+      color: #444;
+    }
+    .total-duration {
+      text-align: center;
+      margin-top: 40px;
+      font-style: italic;
+      font-size: 16px;
+      color: white;
+    }
+    .nav-buttons {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .nav-buttons button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 14px;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+  

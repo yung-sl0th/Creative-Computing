@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yoga Reflection Room</title>
+  <style>
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: url('poses/yoga-wall.jpg') no-repeat center center fixed;
+  background-size: cover;
+  overflow-y: auto;
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Place the container absolutely in the top-middle of the screen */
+#beam-container {
+  position: absolute;
+  top: 100px; /* ← Move this up to raise everything */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 120px;
+  z-index: 10; /* Put this ABOVE all other elements */
+  pointer-events: none; /* Prevent blocking art piece clicks */
+}
+
+
+
+/* Ensure rope is always visually in front */
+#hanger-wrapper {
+  position: absolute;
+  top: 60px; /* This is the sweet spot from your last mockup */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 180px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#shelf {
+  position: absolute;
+  top: 350px; /* ⬅️ Adjust vertically here */
+  left: 50%;  /* Center horizontally */
+  transform: translateX(-50%);
+  width: 600px; /* Adjust to match shelf image */
+  z-index: 10;
+}
+
+#hanging-plants-container {
+  position: absolute;
+  top: 130px; /* ⬅️ Adjust to sit slightly above the shelf */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 11;
+}
+
+
+.hanging-plant {
+  width: 80px;
+  height: auto;
+  cursor: pointer;
+}
+
+
+#reflection-popup {
+  display: none;
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 999;
+  max-width: 400px;
+  text-align: center;
+}
+
+  
+    #reflection-heading {
+      text-align: center;
+      font-size: 28px;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #reflections-board {
+      margin: 20px auto 0;
+      max-width: 700px;
+      padding: 20px;
+      background: rgba(255,255,255,0.96);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+  
+    .reflection-entry {
+      background: #fff;
+      margin-top: 10px;
+      padding: 10px;
+      border-left: 4px solid #6c63ff;
+      border-radius: 4px;
+    }
+
+    #reflection-modal {
+  position: absolute;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  width: 400px;
+  z-index: 1000;
+  display: none;
+  left: 50%;
+  top: 250px;
+  transform: translateX(-50%);
+}
+
+#art-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 20px; /* reduced to keep art higher */
+  max-width: 1000px;
+}
+
+    .art-piece {
+      width: 140px;
+      height: 140px;
+      background-size: cover;
+      background-position: center;
+      border: 5px solid white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .art-piece:hover {
+      transform: scale(1.05);
+    }
+  
+
+  
+    textarea {
+      width: 90%;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 10px;
+      background: #995af0;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #544be4;
+    }
+  
+    .poll-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+  
+    .poll-options button {
+      padding: 8px 14px;
+      font-size: 14px;
+      border: none;
+      background-color: #0606df;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  
+    .poll-options button:hover {
+      background-color: #7070b8;
+    }
+  
+    .poll-results .bar-container {
+      margin-bottom: 10px;
+    }
+  
+    .poll-results .bar-label {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+  
+    .poll-results .bar {
+      height: 16px;
+      background-color: #6c63ff;
+      color: white;
+      text-align: right;
+      padding-right: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 16px;
+    }
+  
+    #memory-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+  
+    #memory-board {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 15px;
+    }
+  
+    .memory-card {
+      width: 100px;
+      height: 100px;
+      background-color: #eaeaea;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transform: scale(1);
+      transition: transform 0.2s;
+    }
+  
+    .memory-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+  
+    .memory-card.flipped img {
+      display: block;
+    }
+  
+    .memory-card.matched {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+  
+    #congrats-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 3000;
+    }
+  
+    #congrats-message img {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+  
+    #congrats-message p {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4b4b4b;
+    }
+  
+    .card.matched {
+      border: 2px solid limegreen;
+      box-shadow: 0 0 10px limegreen;
+    }
+  
+   
+  
+  
+    #puzzle-board img {
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      cursor: grab;
+    }
+  
+
+  </style>
+</head>
+<body>
+
+    <a href="index.html" style="position: fixed; top: 20px; left: 20px; z-index: 3000;">
+        <button style="padding: 10px 16px; font-size: 14px; background-color: #444; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          ← Back to Home
+        </button>
+      </a>
+
+
+      <h1 id="reflection-heading">🧘‍♀️ Shared Reflections</h1>
+
+      <img src="poses/shelf.jpg" alt="Shelf 1" style="position:absolute; top:470px; left:50%; transform:translateX(-50%); width:600px; z-index:5;">
+      <div id="hanging-plants-container" style="position:absolute; top:0; left:0; width:100%; height:100vh; z-index:10; pointer-events:none;">
+        <!-- Plants will be placed here with static top/left -->
+      </div>
+
+
+      <!-- Popup Modal for Reflection -->
+      <div id="reflection-popup">
+        <p id="popup-text"></p>
+        <button onclick="document.getElementById('reflection-popup').style.display='none'">Close</button>
+      </div>
+
+
+  <!-- Art Pieces -->
+  <div id="art-gallery">
+    <div class="art-piece" id="art1" style="background-image: url('poses/art1.jpg');" data-type="text" data-tip="🧘 What is your goal in doing yoga?"></div>
+    <div class="art-piece" id="art2" style="background-image: url('poses/art2.jpg');" data-type="text" data-tip="🌼 How did today’s session feel?"></div>
+    <div class="art-piece" id="art3" style="background-image: url('poses/art3.jpg');" data-type="text" data-tip="🌱 Was anything difficult for you today?"></div>
+    <div class="art-piece" id="art4" style="background-image: url('poses/art4.jpg');" data-type="poll" data-question="improve"></div>
+    <div class="art-piece" id="art5" style="background-image: url('poses/art5.jpg');" data-type="poll" data-question="feeling"></div>
+    <div class="art-piece" id="art6" style="background-image: url('poses/art6.jpg');" data-type="game"></div>
+    <div class="art-piece" id="art7" style="background-image: url('poses/art7.jpg');" data-type="garden"></div>
+    <!-- Add art8 and art9 later here -->
+  </div>
+  
+
+
+
+  <!-- Modal -->
+  <div id="reflection-modal">
+    <h3 id="modal-tip">Reflection</h3>
+    <textarea id="reflection-text" rows="5" style="display: none;"></textarea>
+    <button onclick="submitReflection()" id="submit-reflection-btn" style="display: none;">📬 Submit Reflection</button>
+    <div id="poll-options" class="poll-options" style="display: none;"></div>
+    <button id="submit-poll-btn" onclick="submitPollVote()" style="display: none;">📬 Submit Vote</button>
+    <div id="poll-results" class="poll-results" style="margin-top: 20px;"></div>
+  </div>
+
+  <!-- Memory Game Modal -->
+<div id="memory-modal">
+    <div id="memory-board"></div>
+    <div id="congrats-message">
+      <img src="poses/Confetti.gif" alt="Confetti" />
+      <p>🎉 Congratulations!! You have won!! 🎉</p>
+    </div>
+  </div>
+
+  <!-- Reflection Board -->
+
+  <div id="puzzle-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:700px;">
+      <h3 style="text-align:center;">🧩 Rebuild the Pose</h3>
+      <p style="text-align:center; font-size: 14px; color: #555; margin-top: 10px;">
+        🧩 Drag and drop the tiles into place to complete the yoga pose.
+      </p>
+      <div id="puzzle-board" style="display:grid; grid-template-columns: repeat(3, 100px); gap:10px; justify-content:center; margin:20px auto;"></div>
+      <div style="text-align:center; margin-top:10px;">
+        <button onclick="shufflePuzzle()">🔄 Shuffle Again</button>
+        <button onclick="closePuzzle()">❌ Close</button>
+      </div>
+      <div id="puzzle-confetti" style="display:none; text-align:center; margin-top:20px;">
+        <img src="poses/Confetti.gif" style="width:120px;" />
+        <p>🎉 Pose Complete!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('reflection-modal');
+  const tipText = document.getElementById('modal-tip');
+  const textarea = document.getElementById('reflection-text');
+  const board = document.getElementById('reflections-board');
+  const pollOptionsDiv = document.getElementById('poll-options');
+  const pollResultsDiv = document.getElementById('poll-results');
+  const submitPollBtn = document.getElementById('submit-poll-btn');
+  const submitReflectionBtn = document.getElementById('submit-reflection-btn');
+
+  let currentPollKey = null;
+  let selectedOption = null;
+  const submittedPolls = new Set(); // ✅ Track polls voted on
+
+  const pollData = {
+    improve: {
+      "Arms": 0,
+      "Legs": 0,
+      "Core": 0,
+      "Back": 0,
+      "Cool Down": 0,
+      "Timing": 0
+    },
+    feeling: {
+      "Calm": 0,
+      "Relaxed": 0
+    }
+  };
+
+  document.querySelectorAll('.art-piece').forEach(piece => {
+  piece.addEventListener('click', () => {
+
+    const type = piece.dataset.type;
+   
+    if (type === "game") {
+      memoryModal.style.display = 'block';
+      setupMemoryGame();
+      return;
+    }
+
+
+    modal.style.display = 'block';
+
+    if (type === "text") {
+      textarea.style.display = 'block';
+      tipText.textContent = piece.dataset.tip;
+      submitReflectionBtn.style.display = 'inline-block';
+      submitPollBtn.style.display = 'none';
+      pollOptionsDiv.style.display = 'none';
+      pollResultsDiv.style.display = 'none';
+    } else if (type === "poll") {
+      currentPollKey = piece.dataset.question;
+
+      // Get the question text
+      const questionText = {
+        improve: "What do you want to improve next time?",
+        feeling: "Did you feel calm or relaxed afterward?"
+      }[currentPollKey];
+
+      tipText.textContent = questionText;
+
+      textarea.style.display = 'none';
+      submitReflectionBtn.style.display = 'none';
+
+      if (submittedPolls.has(currentPollKey)) {
+        pollOptionsDiv.style.display = 'none';
+        submitPollBtn.style.display = 'none';
+        updatePollResults(currentPollKey);
+      } else {
+        showPollOptions(currentPollKey);
+      }
+    }
+  });
+});
+
+const memoryModal = document.getElementById('memory-modal');
+const memoryBoard = document.getElementById('memory-board');
+const congratsMessage = document.getElementById('congrats-message');
+
+const cardImages = [
+  'poses/match1.jpg',
+  'poses/match2.jpg',
+  'poses/match3.jpg',
+  'poses/match4.jpg'
+];
+
+let flippedCards = [];
+let matchedPairs = 0;
+
+function shuffleCards() {
+  const duplicated = [...cardImages, ...cardImages]; // Create pairs
+  return duplicated.sort(() => Math.random() - 0.5); // Shuffle
+}
+
+function renderMemoryGame() {
+  memoryBoard.innerHTML = '';
+  flippedCards = [];
+  matchedPairs = 0;
+
+  const shuffled = shuffleCards();
+
+  shuffled.forEach((src, idx) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.src = src;
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Yoga Pose';
+
+    card.appendChild(img);
+    memoryBoard.appendChild(card);
+
+    card.addEventListener('click', () => handleFlip(card));
+  });
+}
+
+function handleFlip(card) {
+  if (
+    card.classList.contains('flipped') ||
+    card.classList.contains('matched') ||
+    flippedCards.length === 2
+  ) return;
+
+  card.classList.add('flipped');
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    const [first, second] = flippedCards;
+    const img1 = first.dataset.src;
+    const img2 = second.dataset.src;
+
+    if (img1 === img2) {
+      first.classList.add('matched');
+      second.classList.add('matched');
+      flippedCards = [];
+      matchedPairs++;
+
+      if (matchedPairs === cardImages.length) {
+        setTimeout(() => {
+          congratsMessage.style.display = 'block';
+          setTimeout(() => {
+            congratsMessage.style.display = 'none';
+            memoryModal.style.display = 'none';
+          }, 3000);
+        }, 800);
+      }
+    } else {
+      setTimeout(() => {
+        first.classList.remove('flipped');
+        second.classList.remove('flipped');
+        flippedCards = [];
+      }, 1000);
+    }
+  }
+}
+
+document.getElementById('art6').addEventListener('click', () => {
+  memoryModal.style.display = 'flex';
+  renderMemoryGame();
+});
+
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('memory-modal');
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+
+function resetMemoryGame() {
+  setupMemoryGame();
+}
+
+
+  function showPollOptions(key) {
+    const options = Object.keys(pollData[key]);
+    pollOptionsDiv.innerHTML = "";
+    pollResultsDiv.innerHTML = "";
+    selectedOption = null;
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        selectedOption = opt;
+        [...pollOptionsDiv.children].forEach(b => b.style.background = "");
+        btn.style.background = "#cfcfff";
+      };
+      pollOptionsDiv.appendChild(btn);
+    });
+
+    pollOptionsDiv.style.display = 'flex';
+    submitPollBtn.style.display = 'inline-block';
+    pollResultsDiv.style.display = 'none';
+  }
+
+  function submitPollVote() {
+    if (!currentPollKey || !selectedOption || submittedPolls.has(currentPollKey)) return;
+
+    pollData[currentPollKey][selectedOption]++;
+    submittedPolls.add(currentPollKey); // ✅ Mark this poll as voted
+
+    pollOptionsDiv.style.display = 'none';
+    submitPollBtn.style.display = 'none';
+    updatePollResults(currentPollKey);
+  }
+
+  function updatePollResults(key) {
+  const results = pollData[key];
+  const total = Object.values(results).reduce((a, b) => a + b, 0);
+  pollResultsDiv.innerHTML = "";
+
+  const note = document.createElement('div');
+  note.textContent = "You already voted.";
+  note.style.marginBottom = "10px";
+  note.style.fontSize = "14px";
+  note.style.fontWeight = "normal";
+  pollResultsDiv.appendChild(note); // 👈 Add this line
+
+  for (let option in results) {
+    const percent = total ? Math.round((results[option] / total) * 100) : 0;
+
+    const barWrapper = document.createElement('div');
+    barWrapper.style.marginBottom = '8px';
+
+    const label = document.createElement('div');
+    label.textContent = `${option} (${results[option]} votes)`;
+    label.style.fontSize = '13px';
+
+    const bar = document.createElement('div');
+    bar.style.height = '16px';
+    bar.style.background = '#6c63ff';
+    bar.style.width = `${percent}%`;
+    bar.style.color = 'white';
+    bar.style.paddingRight = '6px';
+    bar.style.borderRadius = '4px';
+    bar.textContent = `${percent}%`;
+
+    barWrapper.appendChild(label);
+    barWrapper.appendChild(bar);
+    pollResultsDiv.appendChild(barWrapper);
+  }
+
+  pollResultsDiv.style.display = 'block';
+}
+
+
+
+
+  const puzzleModal = document.getElementById("puzzle-modal");
+const puzzleBoard = document.getElementById("puzzle-board");
+const puzzleConfetti = document.getElementById("puzzle-confetti");
+
+const poses = ["puzzle1", "puzzle2", "puzzle3"];
+let currentPose = "";
+let dragged = null;
+
+function openPuzzle() {
+  puzzleModal.style.display = "flex";
+  const pose = poses[Math.floor(Math.random() * poses.length)];
+  generatePuzzleFrom(pose);
+}
+
+function closePuzzle() {
+  puzzleModal.style.display = "none";
+  puzzleConfetti.style.display = "none";
+  puzzleBoard.innerHTML = "";
+}
+
+function generatePuzzleFrom(poseName) {
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const shuffled = numbers.sort(() => Math.random() - 0.5);
+  puzzleBoard.innerHTML = "";
+  currentPose = poseName;
+
+  shuffled.forEach(num => {
+    const img = document.createElement("img");
+    img.src = `poses/${poseName}-${num}.jpg`;
+    img.draggable = true;
+    img.dataset.order = num;
+    img.addEventListener("dragstart", dragStart);
+    img.addEventListener("dragover", allowDrop);
+    img.addEventListener("drop", dropTile);
+    puzzleBoard.appendChild(img);
+  });
+}
+
+
+function shufflePuzzle() {
+  // Pick a new pose different from currentPose
+  const otherPoses = poses.filter(p => p !== currentPose);
+  currentPose = otherPoses[Math.floor(Math.random() * otherPoses.length)];
+  
+  generatePuzzleFrom(currentPose);
+  puzzleConfetti.style.display = "none";
+}
+
+
+// Drag and Drop Logic
+function dragStart(e) {
+  dragged = e.target;
+}
+function allowDrop(e) {
+  e.preventDefault();
+}
+function dropTile(e) {
+  e.preventDefault();
+  if (dragged && dragged !== e.target) {
+    const tmpSrc = e.target.src;
+    const tmpOrder = e.target.dataset.order;
+
+    e.target.src = dragged.src;
+    e.target.dataset.order = dragged.dataset.order;
+
+    dragged.src = tmpSrc;
+    dragged.dataset.order = tmpOrder;
+
+    checkPuzzleCompletion();
+  }
+}
+
+function checkPuzzleCompletion() {
+  const imgs = [...puzzleBoard.querySelectorAll("img")];
+  const isCorrect = imgs.every((img, idx) => parseInt(img.dataset.order) === idx + 1);
+  if (isCorrect) {
+    puzzleConfetti.style.display = "block";
+  }
+}
+
+// 🔗 Trigger on art click (example for art7)
+document.getElementById("art7").addEventListener("click", openPuzzle);
+
+const hangingImages = [
+  "poses/Hang1.jpg",
+  "poses/Hang2.jpg",
+  "poses/Hang3.jpg",
+  "poses/Hang4.jpg",
+  "poses/Hang5.jpg"
+];
+let reflectionList = [];
+
+function submitReflection() {
+  const text = textarea.value.trim();
+  if (text) {
+    modal.style.display = 'none';
+    textarea.value = '';
+    document.getElementById("no-reflections")?.remove();
+    reflectionList.push(text);
+    updateHangingPlants();
+  }
+}
+const plantSlots = [
+  { top: 500, leftOffset: 525 },
+  { top: 500, leftOffset: 600 },
+  { top: 500, leftOffset: 675 },
+  { top: 500, leftOffset:  750},
+  { top: 500, leftOffset: 825 },
+  { top: 625, leftOffset: 525 },
+  { top: 625, leftOffset: 600 },
+  { top: 625, leftOffset: 675 },
+  { top: 625, leftOffset:  750},
+  { top: 625, leftOffset: 825 },
+];
+
+
+function updateHangingPlants() {
+  const container = document.getElementById("hanging-plants-container");
+  container.innerHTML = "";
+
+  reflectionList.forEach((text, index) => {
+    if (index >= plantSlots.length) return;
+
+    const slot = plantSlots[index];
+
+    const plant = document.createElement("img");
+    plant.src = "poses/Hang2.jpg";
+    plant.className = "hanging-plant";
+    plant.style.position = "absolute";
+    plant.style.pointerEvents = "auto";
+    plant.style.top = `${slot.top}px`;
+    plant.style.left = "50%";
+    plant.style.transform = `translateX(${slot.leftOffset}px)`;
+    plant.style.zIndex = 10;
+
+    plant.onclick = () => showReflectionPopup(text);
+    container.appendChild(plant);
+  });
+}
+function showReflectionPopup(text) {
+  document.getElementById("popup-text").textContent = text;
+  document.getElementById("reflection-popup").style.display = "block";
+}
+
+window.addEventListener("click", (e) => {
+  // puzzle
+  if (e.target === puzzleModal) {
+    puzzleModal.style.display = "none";
+  }
+
+  // Reflection Modal
+  const isArtPiece = e.target.classList.contains('art-piece');
+  const isInsideModal = document.getElementById('reflection-modal').contains(e.target);
+  if (!isArtPiece && !isInsideModal) {
+    document.getElementById('reflection-modal').style.display = 'none';
+  }
+});
+
+
+  </script>
+</body>
+</html>

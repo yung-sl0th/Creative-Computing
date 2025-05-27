@@ -1,0 +1,1211 @@
+<!-- choose-fragment.html -->
+<div id="choose-fragment">
+  <div class="top-nav">
+    
+  </div>
+
+  <div id="drop-zone" ondrop="handleDrop(event)" ondragover="event.preventDefault();">
+    <img src="poses/brain-watering.jpg" alt="Drop Zone">
+    <div class="drop-overlay">
+      <p><span id="drop-count">0</span> poses added</p>
+    </div>
+  
+    <!-- Submit Button -->
+    <button id="submit-sequence" onclick="revealFinalSequence()">Submit</button>
+  
+    <!-- Hover Preview -->
+    <div id="hover-preview" class="hover-preview"></div>
+  </div>
+
+  
+  <div id="greeting-banner">
+    <div class="message">👋 Hello! Drag and Drop poses to water your mind and grow 🪴</div>
+    <div class="arrow">⬇️</div>
+  </div>
+
+
+  <div id="drop-label">
+    <span>D</span>
+    <span>R</span>
+    <span>A</span>
+    <span>G</span>
+    <span>&</span>
+    <span>D</span>
+    <span>R</span>
+    <span>O</span>
+    <span>P</span>
+    <span>⬇️</span>
+  </div>
+
+  <div class="filter-controls">
+    <button data-filter="all" class="active">All</button>
+    <button data-filter="beginner">Beginner</button>
+    <button data-filter="intermediate">Intermediate</button>
+    <button data-filter="advanced">Advanced</button>
+  </div>
+
+  <div class="pose-section" id="pose-section"></div>
+</div>
+<div id="bloom-flower" style="display: none;"></div>
+
+<div id="bean-stack"></div>
+
+<div id="loading-screen" style="display: none;">
+  <img id="gif" src="poses/Final.gif" alt="Final Animation" />
+  <div id="loading-text">Your Poses are Loading...</div>
+</div>
+
+<!-- Final Container (optional if used in JS) -->
+<div id="final-container" style="display: none;"></div>
+
+<!-- Final Sequence Reveal -->
+<div id="final-sequence" style="display: none;">
+  <div style="margin-top: 30px;">
+    <button onclick="returnToBuilder()" class="action-btn">🔄 Return to Builder</button>
+    <button onclick="clearDropZone()" class="action-btn" style="margin-left: 15px;">🧹 Clear Poses</button>
+    <a href="reflection-room.html" class="action-btn" style="margin-left: 15px;">🧘 Reflection</a>
+
+
+  </div>
+  <h2 id="final-heading">Your Final Sequence</h2>
+  <div id="final-list"></div>
+</div>
+
+<div id="bean-stack-left" class="bean-stack"></div>
+<div id="bean-stack-center" class="bean-stack"></div>
+<div id="bean-stack-right" class="bean-stack"></div>
+<div id="bean-stack-final" class="bean-stack"></div>
+
+
+<style>
+
+
+#drop-zone {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 150px;
+  height: 150px;
+  z-index: 5;
+}
+
+  #drop-zone img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px dashed #6c63ff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .selected-highlight {
+  border: 3px solid gold !important;
+  box-shadow: 0 0 12px gold;
+  transform: scale(1.03);
+  transition: all 0.3s ease-in-out;
+}
+
+  .drop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+  }
+  .filter-controls {
+  position: sticky;
+  top: 20px;
+  z-index: 10;
+  background: #fff0; /* or a color to avoid overlap */
+}
+  .filter-controls button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #eaeaea;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .filter-controls button:hover {
+    background-color: #d0d0ff;
+  }
+  .filter-controls button.active {
+    background-color: #6c63ff;
+    color: white;
+  }
+  .pose-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0 40px;
+  }
+  .pose-card {
+    width: 180px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .pose-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 8px;
+  }
+  .pose-card .title {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .pose-card .level {
+    font-size: 12px;
+    font-style: italic;
+    color: #666;
+  }
+  .pose-card[data-level="beginner"] { border: 2px solid #d63384; }
+  .pose-card[data-level="intermediate"] { border: 2px solid #6f42c1; }
+  .pose-card[data-level="advanced"] { border: 2px solid #0d6efd; }
+
+  .pose-card.selected-highlight {
+  border: 3px solid gold !important;
+  box-shadow: 0 0 15px gold;
+  transform: scale(1.03);
+  transition: all 0.3s ease-in-out;
+}
+  .bird-fly {
+  border-radius: 10px;
+  opacity: 0.95;
+  transition: transform 0.3s ease-in-out;
+}
+
+.rocket-trail {
+  position: absolute;
+  width: 60px; /* was 40px */
+  height: 60px;
+  background-image: url('poses/fluttering.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  animation: flutterFade 0.8s ease-out forwards;
+  z-index: 9998;
+}
+
+@keyframes flutterFade {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5) rotate(45deg);
+    opacity: 0;
+  }
+}
+.sparkle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, white 40%, transparent 70%);
+  border-radius: 50%;
+  animation: sparkleFade 0.8s ease-out forwards;
+  z-index: 9999;
+}
+
+@keyframes sparkleFade {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.5); }
+}
+
+@keyframes flowerBloom {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.3;
+    filter: brightness(0.6);
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    filter: brightness(1.3);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+
+
+#drop-zone.blooming {
+  animation: flowerBloom 1s ease-out;
+  box-shadow: 0 0 45px rgba(255, 192, 203, 0.9);
+  border: 4px solid #ff69b4;
+}
+
+#bloom-flower {
+  position: fixed;
+  bottom: 180px;
+  right: 40px;
+  width: 100px;
+  height: 100px;
+  background-image: url('poses/flower.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(0.3);
+  z-index: 6;
+  transition: all 2s ease-out;
+}
+
+#bloom-flower.blooming {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+
+#bean-wrapper {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 180px;
+  height: 0;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+  display: none;
+  transition: height 0.4s ease-in-out; /* smoother growth */
+}
+
+#bean-image {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: opacity 0.6s ease-in-out;
+}
+
+
+
+
+
+@keyframes growVine {
+  to {
+    transform: scaleY(1); /* Grows to full height */
+  }
+}
+
+.bean-stack {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  z-index: 1; /* behind content */
+  pointer-events: none;
+}
+
+#bean-stack-left {
+  left: -50px;
+}
+
+#bean-stack-center {
+  left: 500px; /* adjust to middle area */
+}
+
+#bean-stack-right {
+  left: 1025px; /* adjust to far right column */
+}
+
+.bean-segment {
+  width: 120px;
+  animation: fadeInGrow 0.4s ease;
+}
+
+
+@keyframes fadeInGrow {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+#bean-stack-final {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 0; /* very back */
+}
+
+#bean-container {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 160px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fadeGrow {
+  animation: fadeInGrow 0.6s ease;
+}
+
+@keyframes fadeInGrow {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+}
+
+#submit-sequence {
+  position: fixed;
+  bottom: 190px;
+  right: 35px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 10;
+}
+#submit-sequence:hover {
+  background-color: #594cf5;
+}
+
+#final-sequence {
+  display: none;
+  position: fixed;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 12px;
+  padding: 40px 30px;
+  z-index: 1001;
+  max-height: 80%;
+  max-width: 85%;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+#final-sequence h2 {
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+#final-gif {
+  max-width: 180px;
+  height: auto;
+}
+
+#loading-text {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+#final-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+.fade-in {
+  animation: fadeIn 1s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#loading-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+}
+.action-btn {
+  padding: 10px 16px;
+  background-color: #6c63ff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+  background-color: #544be4;
+}
+
+.hover-preview {
+  display: none;
+  position: absolute;
+  bottom: 240px; /* Or adjust as needed */
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+
+
+
+.hover-preview ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.hover-preview li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.hover-preview li button {
+  background: transparent;
+  color: red;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hover-preview .clear-btn {
+  margin-top: 10px;
+  background-color: #eee;
+  padding: 6px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.hover-preview .clear-btn:hover {
+  background-color: #ddd;
+}
+
+#pin-tooltip {
+  transition: opacity 0.3s ease;
+}
+
+#greeting-banner {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+#greeting-banner .message {
+  font-size: 18px;
+  font-weight: bold;
+  color: #444;
+}
+
+#greeting-banner .arrow {
+  font-size: 24px;
+  animation: bounce 1s infinite ease-in-out;
+}
+
+@keyframes bounce {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(6px); }
+  100% { transform: translateY(0); }
+}
+
+#drop-label {
+  position: fixed;
+  right: 15px;
+  top: 120px;
+  z-index: 12;
+  font-size: 20px;
+  font-weight: bold;
+  color: #4b4bff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  line-height: 24px;
+  user-select: none;
+}
+
+#drop-label span {
+  display: block;
+  margin-bottom: 6px;
+  animation: floatDrop 1.4s ease-in-out infinite;
+}
+
+@keyframes floatDrop {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+  100% { transform: translateY(0); }
+}
+
+
+</style>
+
+const dropPoses = []; 
+<script>
+  const dropPoses = [];
+  const posesByCategory = {
+"Legs": [
+{ name: "Butterfly Stretch", level: "beginner" },
+{ name: "Seated Forward Fold", level: "beginner" },
+{ name: "Happy Baby", level: "beginner" },
+{ name: "Goddess Pose Pulses", level: "beginner" },
+{ name: "Goddess Pose Flow", level: "beginner" },
+{ name: "Bridge Pose", level: "beginner" },
+{ name: "Supine Twist", level: "beginner" },
+{ name: "Low Lunge", level: "intermediate" },
+{ name: "Pigeon Pose", level: "intermediate" },
+{ name: "Lizard Lunge", level: "intermediate" },
+{ name: "Warrior II", level: "intermediate" },
+{ name: "Crescent Lunge", level: "intermediate" },
+{ name: "Frog Pose", level: "intermediate" },
+{ name: "Low Lunge to Crescent Lunge", level: "advanced" },
+{ name: "Jump Squats", level: "advanced" },
+{ name: "Jumping Jacks", level: "advanced" }
+],
+"Arms": [
+{ name: "Neck Rolls", level: "beginner" },
+{ name: "Shoulder Rolls", level: "beginner" },
+{ name: "Thread the Needle", level: "beginner" },
+{ name: "Puppy Pose", level: "beginner" },
+{ name: "Eagle Arms", level: "beginner" },
+{ name: "Cow Face Arms", level: "beginner" },
+{ name: "Supported Fish Pose", level: "beginner" },
+{ name: "Sun Salutation A", level: "intermediate" },
+{ name: "Sun Salutation B", level: "intermediate" },
+{ name: "Chaturanga", level: "intermediate" },
+{ name: "Chaturanga to Up Dog", level: "intermediate" },
+{ name: "Plank to Down Dog", level: "intermediate" },
+{ name: "Reverse Tabletop", level: "intermediate" },
+{ name: "Chaturanga to Up Dog to Down Dog", level: "advanced" },
+{ name: "Dolphin Pose", level: "advanced" },
+{ name: "Dolphin Dips", level: "advanced" },
+{ name: "Forearm Plank", level: "advanced" }
+],
+"Back": [
+{ name: "Cat-Cow", level: "beginner" },
+{ name: "Child’s Pose", level: "beginner" },
+{ name: "Supine Twist", level: "beginner" },
+{ name: "Reclined Twist", level: "beginner" },
+{ name: "Happy Baby", level: "beginner" },
+{ name: "Chair Pose", level: "beginner" },
+{ name: "Knees to Chest", level: "intermediate" },
+{ name: "Sphinx Pose", level: "intermediate" },
+{ name: "Reclining Twist", level: "intermediate" },
+{ name: "Bridge Pulses", level: "intermediate" },
+{ name: "Warrior I", level: "intermediate" },
+{ name: "Upward Facing Dog", level: "intermediate" },
+{ name: "Locust Pose", level: "intermediate" },
+{ name: "Down Dog to Plank", level: "advanced" },
+{ name: "Camel Pose", level: "advanced" }
+],
+"Core": [
+{ name: "Figure Four Stretch", level: "beginner" },
+{ name: "Glute Pulses", level: "beginner" },
+{ name: "Plank to Down Dog", level: "beginner" },
+{ name: "Chair Pose", level: "beginner" },
+{ name: "Bicycle Crunches", level: "beginner" },
+{ name: "Dead Bug", level: "beginner" },
+{ name: "Crunches", level: "beginner" },
+{ name: "High Boat", level: "beginner" },
+{ name: "Boat Pose", level: "intermediate" },
+{ name: "Side Plank", level: "intermediate" },
+{ name: "Leg Raises", level: "intermediate" },
+{ name: "Mountain Climbers", level: "intermediate" },
+{ name: "Side Crunches", level: "intermediate" },
+{ name: "Forearm Plank", level: "advanced" },
+{ name: "Flutter Kicks", level: "advanced" }
+],
+"Cooldown": [
+{ name: "Savasana", level: "beginner" },
+{ name: "Reclined Bound Angle", level: "beginner" },
+{ name: "Seated Twist", level: "beginner" },
+{ name: "Child’s Pose", level: "beginner" },
+{ name: "Supine Bound Angle", level: "beginner" },
+{ name: "Corpse Pose", level: "beginner" },
+{ name: "Knees to Chest", level: "beginner" },
+{ name: "Supported Fish Pose", level: "intermediate" },
+{ name: "Legs Up the Wall", level: "intermediate" },
+{ name: "Reclining Hero Pose", level: "intermediate" },
+{ name: "Side-Lying Twist", level: "intermediate" },
+{ name: "Deep Breathing", level: "advanced" },
+{ name: "Seated Meditation", level: "advanced" },
+{ name: "Lying Butterfly", level: "advanced" }
+]
+};
+
+
+  function returnHome() {
+    document.getElementById("main-content").innerHTML = "";
+    document.getElementById("home-section").style.display = "flex";
+  }
+
+  function launchMusic() {
+    if (!window.musicPlayer || window.musicPlayer.closed) {
+      window.musicPlayer = window.open('music.html', 'MusicWindow', 'width=200,height=100,left=200,top=200');
+    } else {
+      window.musicPlayer.focus();
+    }
+  }
+
+  let poseCount = 0;
+  let beanStep = 0;
+
+  function growBean() {
+  const stacks = [
+    document.getElementById('bean-stack-left'),
+    document.getElementById('bean-stack-center'),
+    document.getElementById('bean-stack-right')
+  ];
+
+  if (beanStep >= 9) return;
+
+  const img = document.createElement('img');
+  img.src = `poses/Bean-${beanStep + 1}.jpg`;
+  img.className = 'bean-segment';
+  img.style.animation = 'fadeInGrow 0.6s ease';
+  img.style.width = '160px';
+
+  stacks.forEach(stack => {
+    if (stack) stack.appendChild(img.cloneNode(true));
+  });
+
+  beanStep++;
+}
+
+
+
+
+function handleDrop(event) {
+  event.preventDefault();
+  const data = event.dataTransfer.getData("text/plain");
+  if (!data) return;
+
+  const dropped = JSON.parse(data); // e.g., { name: "Some Pose", category: "Arms" }
+
+  // Try to find pose info (e.g. level) from posesByCategory
+  let pose = null;
+  if (posesByCategory[dropped.category]) {
+    pose = posesByCategory[dropped.category].find(p => p.name === dropped.name);
+  }
+
+  // Fallback if not found — assign default values
+  if (!pose) {
+    pose = { name: dropped.name, level: "Unknown" };
+  }
+
+  // Prevent duplicates
+  if (dropPoses.find(p => p.name === pose.name)) return;
+
+  dropPoses.push({ name: pose.name, level: pose.level }); 
+  document.getElementById("drop-count").textContent = dropPoses.length;
+
+  // 🔍 Lookup pose card by name
+  const poseCard = document.querySelector(`.pose-card[data-pose-name="${pose.name}"]`);
+  if (!poseCard) {
+    console.warn(`Pose card not found for: ${pose.name}`);
+    return;
+  }
+
+  const img = poseCard.querySelector("img");
+  if (!img) {
+    console.warn(`Image not found inside card for: ${pose.name}`);
+    return;
+  }
+
+  // 🌼 Animate sparkle, bird, and flower
+  const imgRect = img.getBoundingClientRect();
+  const dropZone = document.getElementById('drop-zone');
+  const dropRect = dropZone.getBoundingClientRect();
+  poseCard.classList.add('selected-highlight');
+
+  const flower = document.getElementById('bloom-flower');
+  if (flower) {
+    flower.classList.add('blooming');
+    setTimeout(() => flower.classList.remove('blooming'), 3000);
+  }
+
+  const birdImg = document.createElement('img');
+  birdImg.src = 'poses/birds.jpg';
+  birdImg.className = 'bird-fly';
+  birdImg.style.position = 'fixed';
+  birdImg.style.left = imgRect.left + 'px';
+  birdImg.style.top = imgRect.top + 'px';
+  birdImg.style.width = '150px';
+  birdImg.style.height = '150px';
+  birdImg.style.zIndex = 9999;
+  birdImg.style.pointerEvents = 'none';
+  document.body.appendChild(birdImg);
+
+  const startX = imgRect.left;
+  const startY = imgRect.top;
+  const endX = dropRect.left + 40;
+  const endY = dropRect.top + 40;
+  const controlX = (startX + endX) / 2;
+  const controlY = Math.min(startY, endY) - 350;
+
+  const duration = 2200;
+  let startTime = null;
+
+  function animateFlight(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const x = (1 - progress) ** 2 * startX + 2 * (1 - progress) * progress * controlX + progress ** 2 * endX;
+    const y = (1 - progress) ** 2 * startY + 2 * (1 - progress) * progress * controlY + progress ** 2 * endY;
+    const angle = Math.sin(progress * Math.PI) * 20;
+    birdImg.style.left = `${x}px`;
+    birdImg.style.top = `${y}px`;
+    birdImg.style.transform = `rotate(${angle}deg)`;
+
+    const trail = document.createElement('div');
+    trail.className = 'rocket-trail';
+    trail.style.left = `${x + 30}px`;
+    trail.style.top = `${y + 50}px`;
+    document.body.appendChild(trail);
+    setTimeout(() => trail.remove(), 800);
+
+    if (progress < 1) {
+      requestAnimationFrame(animateFlight);
+    } else {
+      birdImg.remove();
+      dropZone.classList.add('blooming');
+      setTimeout(() => dropZone.classList.remove('blooming'), 1000);
+      for (let i = 0; i < 12; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = (endX + Math.random() * 40) + 'px';
+        sparkle.style.top = (endY + Math.random() * 40) + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 900);
+      }
+    }
+  }
+
+  requestAnimationFrame(animateFlight);
+  growBean();
+  console.log("Pose added — growing beanstalk + bean...");
+  updateHoverPreview();
+}
+
+function returnFromReflection() {
+  document.getElementById('reflection-wall').style.display = 'none';
+  document.getElementById('final-sequence').style.display = 'block';
+}
+
+
+
+function fadeInElement(el) {
+  el.style.opacity = 0;
+  el.style.display = 'block';
+  let opacity = 0;
+  const interval = setInterval(() => {
+    opacity += 0.05;
+    el.style.opacity = opacity;
+    if (opacity >= 1) clearInterval(interval);
+  }, 30);
+}
+
+
+function submitSequence() {
+  if (dropPoses.length < 10) {
+    alert("Add 10 poses before submitting!");
+    return;
+  }
+
+  const bean = document.getElementById("exploding-bean");
+  bean.style.display = "block";
+  bean.classList.add("fadeGrow");
+
+  setTimeout(() => {
+    bean.style.display = "none";
+    document.getElementById("final-sequence-reveal").style.display = "block";
+
+    const finalDisplay = document.getElementById("final-pose-display");
+    finalDisplay.innerHTML = "";
+
+    dropPoses.forEach(pose => {
+  const card = document.createElement('div');
+  card.style.width = '140px';
+  card.style.height = '170px';
+  card.style.textAlign = 'center';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+  card.style.alignItems = 'center';
+  card.style.justifyContent = 'center';
+  card.style.padding = '10px';
+
+  card.innerHTML = `
+    <div style="width: 100%; height: 100px; display: flex; align-items: center; justify-content: center;">
+      <img src="poses/${pose.name}.jpg" 
+           alt="${pose.name}" 
+           style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+    </div>
+    <div style="font-weight: bold; margin-top: 8px;">${pose.name}</div>
+    <div style="font-size: 12px; color: #666;">${pose.level || 'Unknown'} level</div>
+  `;
+  finalList.appendChild(card);
+});
+
+  }, 1500);
+
+  updateHoverPreview();
+
+}
+
+function revealFinalSequence() {
+  const loadingScreen = document.getElementById('loading-screen');
+  const finalSequence = document.getElementById('final-sequence');
+  const gif = document.getElementById('gif');
+  const finalContainer = document.getElementById('final-container');
+  const loadingText = document.getElementById('loading-text');
+  const heading = document.getElementById('final-heading');
+  const finalList = document.getElementById('final-list');
+
+  // Show the loading screen
+  fadeInElement(loadingScreen);
+
+  // Set a timer to reveal the final sequence after the GIF has played
+  setTimeout(() => {
+    loadingScreen.style.display = 'none';
+    finalSequence.style.display = 'block';
+  }, 4500); // Adjust timing if your GIF is longer
+
+  // Finish the beanstalk growth if not already at 9
+// Clear all existing stacks just in case
+["bean-stack-left", "bean-stack-center", "bean-stack-right"].forEach(id => {
+  const stack = document.getElementById(id);
+  if (stack) stack.innerHTML = '';
+});
+
+beanStep = 0;
+
+// Force full growth up to Bean-9
+for (let i = 1; i <= 9; i++) {
+  const img = document.createElement('img');
+  img.src = `poses/Bean-${i}.jpg`;
+  img.className = 'bean-segment';
+  img.style.width = '160px';
+
+  // Append to all stacks
+  ["bean-stack-left", "bean-stack-center", "bean-stack-right"].forEach(id => {
+    const stack = document.getElementById(id);
+    if (stack) {
+      const clone = img.cloneNode(true);
+      stack.appendChild(clone);
+    }
+  });
+}
+
+// Add final Bean-10 at the end
+const finalBean = document.createElement('img');
+finalBean.src = 'poses/Bean-10.jpg';
+finalBean.className = 'bean-segment';
+finalBean.style.width = '160px';
+
+["bean-stack-left", "bean-stack-center", "bean-stack-right"].forEach(id => {
+  const stack = document.getElementById(id);
+  if (stack) stack.appendChild(finalBean.cloneNode(true));
+});
+
+
+  // Show the final GIF animation
+  gif.style.backgroundImage = "url('poses/Final.gif')";
+  gif.style.display = 'block';
+  finalContainer.style.display = 'flex';
+  loadingText.style.display = 'block';
+  heading.style.display = 'none';
+
+  // Delay the reveal of final pose cards
+  setTimeout(() => {
+    gif.style.display = 'none';
+    loadingText.style.display = 'none';
+    heading.style.display = 'block';
+    finalList.innerHTML = '';
+
+    dropPoses.forEach(pose => {
+  const card = document.createElement('div');
+  card.style.width = '120px';
+  card.style.textAlign = 'center';
+  card.style.margin = '10px';
+  card.innerHTML = `
+    <img src="poses/${pose.name}.jpg" style="width:100px;height:100px;object-fit:cover;border-radius:8px;" />
+    <div><strong>${pose.name}</strong></div>
+    <div style="font-size:12px;color:#666;">${pose.level || 'Unknown'} level</div>
+  `;
+  finalList.appendChild(card);
+});
+ document.getElementById('final-sequence').style.display = 'block'; // 👈 This goes at the end
+  }, 4000); // Wait 4 seconds before showing final poses
+}
+
+window.handleDrop = handleDrop;
+
+function returnToBuilder() {
+  document.getElementById('final-sequence').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('drop-count').textContent = dropPoses.length;
+}
+
+function clearDropZone() {
+  dropPoses.length = 0;
+  document.getElementById("drop-count").textContent = "0";
+
+  // Clear all trees
+  ["bean-stack-left", "bean-stack-center", "bean-stack-right"].forEach(id => {
+    const stack = document.getElementById(id);
+    if (stack) stack.innerHTML = '';
+  });
+
+  beanStep = 0;
+
+  // Un-highlight all pose cards
+  document.querySelectorAll('.pose-card').forEach(card => card.classList.remove('selected-highlight'));
+
+  updateHoverPreview();
+}
+
+
+
+function updateHoverPreview() {
+  const preview = document.getElementById('hover-preview');
+  if (!preview) return;
+
+  preview.innerHTML = '';
+
+  if (dropPoses.length === 0) {
+    preview.innerHTML = '<em>No poses selected</em>';
+    return;
+  }
+
+  const list = document.createElement('ul');
+
+  dropPoses.forEach((pose, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      ${pose.name}
+      <button onclick="removePose(${index})">✕</button>
+    `;
+    list.appendChild(li);
+  });
+
+  const clearBtn = document.createElement('button');
+  clearBtn.textContent = '🧹 Clear All';
+  clearBtn.className = 'clear-btn';
+  clearBtn.onclick = clearDropZone;
+
+  preview.appendChild(list);
+  preview.appendChild(clearBtn);
+}
+
+function removePose(index) {
+  dropPoses.splice(index, 1);
+  document.getElementById("drop-count").textContent = dropPoses.length;
+
+  // Reset trees
+  ["bean-stack-left", "bean-stack-center", "bean-stack-right"].forEach(id => {
+    const stack = document.getElementById(id);
+    if (stack) stack.innerHTML = '';
+  });
+
+  beanStep = 0;
+
+  // Re-grow trees based on current dropPoses count
+  for (let i = 0; i < dropPoses.length && i < 9; i++) growBean();
+
+  // Un-highlight all
+  document.querySelectorAll('.pose-card').forEach(card => card.classList.remove('selected-highlight'));
+
+  // Re-highlight active poses
+  dropPoses.forEach(pose => {
+    const card = document.querySelector(`.pose-card[data-pose-name="${pose.name}"]`);
+    if (card) card.classList.add('selected-highlight');
+  });
+
+  updateHoverPreview();
+}
+
+document.querySelectorAll('.reflection-art').forEach(img => {
+  img.addEventListener('click', () => {
+    const tip = img.dataset.tip;
+    document.getElementById('reflection-text').value = tip + '\n';
+  });
+});
+
+function submitReflection() {
+  const text = document.getElementById('reflection-text').value.trim();
+  if (text) {
+    const board = document.getElementById('reflections-board');
+    const entry = document.createElement('div');
+    entry.textContent = text;
+    entry.style.padding = '10px';
+    entry.style.marginBottom = '10px';
+    entry.style.background = '#fff';
+    entry.style.borderLeft = '4px solid #6c63ff';
+    board.appendChild(entry);
+    document.getElementById('reflection-text').value = '';
+  }
+}
+
+
+
+  function renderPoseCards(filter = "all") {
+    const section = document.getElementById("pose-section");
+    if (!section) return;
+    const scrollY = window.scrollY;
+    section.innerHTML = "";
+    for (let category in posesByCategory) {
+      const catDiv = document.createElement("div");
+      catDiv.className = "pose-category";
+      const title = document.createElement("h2");
+      title.textContent = category;
+      catDiv.appendChild(title);
+      const poseList = document.createElement("div");
+      poseList.className = "pose-list";
+      posesByCategory[category].forEach(pose => {
+        if (filter === "all" || pose.level === filter) {
+          const card = document.createElement("div");
+          card.className = "pose-card";
+          card.setAttribute("data-level", pose.level || "unknown");
+          card.setAttribute("data-pose-name", pose.name);
+          card.setAttribute("draggable", "true");
+          card.ondragstart = (e) => {
+            e.dataTransfer.setData("text/plain", JSON.stringify({ name: pose.name, category }));
+          };
+          card.innerHTML = `
+            <img src="poses/${pose.name}.jpg" alt="${pose.name}" onerror="this.src='poses/fallback.jpg'" />
+            <div class="title">${pose.name}</div>
+            <div class="level">${pose.level.charAt(0).toUpperCase() + pose.level.slice(1)} Level</div>
+          `;
+          poseList.appendChild(card);
+        }
+      });
+      catDiv.appendChild(poseList);
+      section.appendChild(catDiv);
+    }
+    window.scrollTo(0, scrollY);
+  }
+
+  function initChoosePage() {
+    renderPoseCards();
+    document.querySelectorAll('.filter-controls button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-controls button').forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+        renderPoseCards(button.dataset.filter);
+      });
+    });
+  }
+
+  setTimeout(() => {
+  const wrapper = document.getElementById('bean-wrapper');
+  wrapper.style.height = '500px';
+  wrapper.style.width = '120px';
+  console.log("Manually grew #bean-wrapper to test visibility");
+}, 1000);
+
+  window.initChoosePage = initChoosePage;
+  
+  let isPinned = false;
+
+const dropZone = document.getElementById("drop-zone");
+const previewBox = document.getElementById("hover-preview");
+
+// Tooltip/message container
+const tooltip = document.createElement("div");
+tooltip.id = "pin-tooltip";
+tooltip.textContent = "Click drop zone to view selected poses";
+tooltip.style.position = "absolute";
+tooltip.style.bottom = "-20px";
+tooltip.style.right = "0";
+tooltip.style.backgroundColor = "#ffffff";
+tooltip.style.padding = "6px 10px";
+tooltip.style.borderRadius = "6px";
+tooltip.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+tooltip.style.fontSize = "13px";
+tooltip.style.color = "#333";
+tooltip.style.zIndex = "20";
+tooltip.style.whiteSpace = "nowrap";
+dropZone.appendChild(tooltip);
+
+// Show preview on hover
+dropZone.addEventListener("mouseenter", () => {
+  if (!isPinned) {
+    updateHoverPreview();
+    previewBox.style.display = "block";
+  }
+});
+
+// Hide on hover leave (if not pinned)
+dropZone.addEventListener("mouseleave", (e) => {
+  const toElement = e.relatedTarget;
+  if (!previewBox.contains(toElement) && !isPinned) {
+    previewBox.style.display = "none";
+  }
+});
+
+// Hide if leaving preview (if not pinned)
+previewBox.addEventListener("mouseleave", () => {
+  if (!isPinned) {
+    previewBox.style.display = "none";
+  }
+});
+
+// Toggle pinned mode and tooltip text on click
+dropZone.addEventListener("click", () => {
+  isPinned = !isPinned;
+
+  if (isPinned) {
+    previewBox.style.display = "block";
+    tooltip.textContent = "Click drop zone again to hide preview";
+  } else {
+    previewBox.style.display = "none";
+    tooltip.textContent = "Click or hover over drop zone to view selected poses";
+  }
+});
+
+</script>
